@@ -1,0 +1,51 @@
+{
+# REGULAR FORMAT: ["pose",Image ID,time in seconds,(Sound ID)}
+# HITBOX FORMAT: ["melee",NewHitboxID,X offset,Y offset,radius,damage]/["deletemelee",HitboxID]
+# PROJECTILE FORMAT: ["projectile",NewProjectileID,Image ID,X offset,Y offset,X movement,Y movement,radius,damage,(Lifetime)]
+# ["projectiledelete",ProjectileID]
+"Idle": [
+		{
+		"id": "pose"
+		"image": "001"
+		"seconds": "0.5"
+		},
+		{
+		"id": "pose"
+		"image": "002"
+		"seconds": "0.5"
+		}
+	],
+
+"Walk": [
+		{
+		"id": "pose"
+		"image": "001"
+		"seconds": "0.25"
+		},
+		{
+		"id": "pose"
+		"image": "003"
+		"seconds": "0.25"
+		}
+	],
+
+"Kick": [
+		{
+		"id": "melee"
+		"hitboxid": "000"
+		"xoffset": "1"
+		"yoffset": "-0.75"
+		"radius": "1"
+		"damage": "15"
+		},
+		{
+		"id": "pose"
+		"image": "004"
+		"seconds": "0.5"
+		},
+		{
+		"id": "deletemelee"
+		"hitboxid": "000"
+		}
+	]
+}

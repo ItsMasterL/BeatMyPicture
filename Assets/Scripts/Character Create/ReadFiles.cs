@@ -12,19 +12,37 @@ public class ReadFiles : MonoBehaviour
     GameObject latestButton;
     public string[] dir;
 
+    public bool delete;
+
     private void Start()
     {
+        Read();
+    }
+
+    public void Read()
+    {
         latestButton = NewButton;
+
+        foreach (GameObject i in GameObject.FindGameObjectsWithTag("FileRead"))
+        {
+            Destroy(i);
+        }
+
         dir = Directory.GetDirectories(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar);
 
         foreach (string directory in dir)
         {
             GameObject iButton = Instantiate(button, canvas.transform);
             iButton.transform.localPosition = latestButton.transform.localPosition;
-            iButton.transform.localPosition = new Vector3 (iButton.transform.localPosition.x, iButton.transform.localPosition.y - 120, iButton.transform.localPosition.z);
+            iButton.transform.localPosition = new Vector3(iButton.transform.localPosition.x, iButton.transform.localPosition.y - 120, iButton.transform.localPosition.z);
             latestButton = iButton;
-            int index = directory.IndexOf(".");
-            iButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = directory.Substring(index + 1);
+            iButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Path.GetFileName(directory);
+            iButton.GetComponent<LoadTemplate>().FilePath = directory;
         }
+    }
+
+    public void ToggleDeleteMode()
+    {
+        delete = !delete;
     }
 }

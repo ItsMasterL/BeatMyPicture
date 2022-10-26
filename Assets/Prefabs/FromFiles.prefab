@@ -12,9 +12,11 @@ GameObject:
   - component: {fileID: 7015323858343389977}
   - component: {fileID: 2412678006899067000}
   - component: {fileID: 8972159112340149767}
+  - component: {fileID: 4825192596193334017}
+  - component: {fileID: 3411853919718088448}
   m_Layer: 5
   m_Name: FromFiles
-  m_TagString: Untagged
+  m_TagString: FileRead
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -118,7 +120,44 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2412678006899067000}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4825192596193334017}
+        m_MethodName: ClickLogic
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &4825192596193334017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3825239408628769776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b3d091bc1fadbe4f924c316a7ddbe96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FilePath: 
+--- !u!114 &3411853919718088448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3825239408628769776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 393cdc08d6e16a04dadff31edca7fb7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  check: {fileID: 0}
 --- !u!1 &7690428893556060018
 GameObject:
   m_ObjectHideFlags: 0

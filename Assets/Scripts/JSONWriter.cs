@@ -36,7 +36,7 @@ public class JSONWriter : MonoBehaviour
     }
     
     [System.Serializable]
-    public class CharacterAnimations
+    public class CharacterAnimations //The main one
     {
         public AnimSet[] animSets;
     }
@@ -46,8 +46,10 @@ public class JSONWriter : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.H))
+        {
             saveJSON();
-        Debug.Log("Saved");
+            Debug.Log("Saved");
+        }
     }
 
     public void saveJSON()

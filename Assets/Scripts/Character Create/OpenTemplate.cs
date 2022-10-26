@@ -5,7 +5,7 @@ using System.IO;
 using TMPro;
 using UnityEngine.SceneManagement;
 
-public class CreateTemplate : MonoBehaviour
+public class OpenTemplate : MonoBehaviour
 {
     public GameObject check;
     public static string carryover;
@@ -16,10 +16,17 @@ public class CreateTemplate : MonoBehaviour
         string input = obj.GetComponent<TMP_InputField>().text;
         if (check.GetComponent<NameCheck>().okay == true)
         {
-            Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + "." + input);
-            carryover = input;
+            Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input);
+            carryover = Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input;
             newtemplate = true;
             SceneManager.LoadScene("TempCreate");
         }
+    }
+
+    public void Open()
+    {
+            carryover = gameObject.GetComponent<LoadTemplate>().FilePath;
+            newtemplate = false;
+            SceneManager.LoadScene("TempCreate");
     }
 }

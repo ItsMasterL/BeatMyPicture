@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public class DrawingScript : MonoBehaviour
 {
     public Camera cam;
     public Camera canvas;
     TrailRenderer trail;
+    public RenderTexture rt;
     bool reset; //to reset the canvas wipe
 
     private void Start()
@@ -61,5 +63,23 @@ public class DrawingScript : MonoBehaviour
     {
         reset = true;
         canvas.clearFlags = CameraClearFlags.SolidColor;
+    }
+
+    public void saveCanvas()
+    {
+        string path = OpenTemplate.carryover;
+        byte[] bytes = toTexture2D(rt).EncodeToPNG(); //Goes to below method btw
+        Directory.CreateDirectory(path + Path.DirectorySeparatorChar + "Cutouts");
+        File.WriteAllBytes(path + Path.DirectorySeparatorChar + "Cutouts" + Path.DirectorySeparatorChar + "id.png", bytes);
+    }
+
+    Texture2D toTexture2D(RenderTexture rTex)
+    {
+        Texture2D tex = new Texture2D(300, 300, TextureFormat.RGB24, false);
+        RenderTexture.active = rTex;
+        tex.ReadPixels(new Rect(0, 0, rTex.width, rTex.height), 0, 0);
+        tex.Apply();
+        Destroy(tex);
+        return tex;
     }
 }

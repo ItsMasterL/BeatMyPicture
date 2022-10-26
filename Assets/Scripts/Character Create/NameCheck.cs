@@ -23,7 +23,7 @@ public class NameCheck : MonoBehaviour
         text.text = "";
         foreach (string directory in dir)
         {
-            if (directory.ToLower() == (Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + "." + input).ToLower())
+            if (directory.ToLower() == (Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input).ToLower())
             {
                 okay = false;
                 text.text = "Name already in use!";

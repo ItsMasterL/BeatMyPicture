@@ -10,6 +10,8 @@ public class DrawingScript : MonoBehaviour
     TrailRenderer trail;
     public RenderTexture rt;
     bool reset; //to reset the canvas wipe
+    public GameObject drawMenu;
+    public GameObject cutoutLoader;
 
     private void Start()
     {
@@ -70,7 +72,10 @@ public class DrawingScript : MonoBehaviour
         string path = OpenTemplate.carryover;
         byte[] bytes = toTexture2D(rt).EncodeToPNG(); //Goes to below method btw
         Directory.CreateDirectory(path + Path.DirectorySeparatorChar + "Cutouts");
-        File.WriteAllBytes(path + Path.DirectorySeparatorChar + "Cutouts" + Path.DirectorySeparatorChar + "id.png", bytes);
+        File.WriteAllBytes(path + Path.DirectorySeparatorChar + "Cutouts" + Path.DirectorySeparatorChar + cutoutLoader.GetComponent<LoadCutouts>().ID + ".png", bytes);
+        clearCanvas();
+        drawMenu.SetActive(false);
+        cutoutLoader.GetComponent<LoadCutouts>().LoadImages();
     }
 
     Texture2D toTexture2D(RenderTexture rTex)
@@ -81,5 +86,11 @@ public class DrawingScript : MonoBehaviour
         tex.Apply();
         Destroy(tex);
         return tex;
+    }
+
+    public void loadCanvas(GameObject loader)
+    {
+        cutoutLoader.GetComponent<LoadCutouts>().ID = loader.GetComponent<CutoutProperties>().ImageID;
+
     }
 }

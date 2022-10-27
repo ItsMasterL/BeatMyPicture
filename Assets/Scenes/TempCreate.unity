@@ -1165,7 +1165,7 @@ GameObject:
   - component: {fileID: 914264924}
   - component: {fileID: 914264923}
   m_Layer: 5
-  m_Name: Image ID
+  m_Name: New
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1248,6 +1248,17 @@ MonoBehaviour:
       - m_Target: {fileID: 1643687097}
         m_MethodName: SetActive
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 1141460961}
+        m_MethodName: NewImage
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1861,6 +1872,7 @@ GameObject:
   - component: {fileID: 1141460959}
   - component: {fileID: 1141460958}
   - component: {fileID: 1141460957}
+  - component: {fileID: 1141460961}
   m_Layer: 5
   m_Name: Main
   m_TagString: Untagged
@@ -1951,6 +1963,23 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1141460961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1141460956}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a38e74a2630a87c45854114a6caf5353, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NewButton: {fileID: 914264921}
+  button: {fileID: 6417518107433004736, guid: bbbc8f7a7d3b9684aa246550725fb6a8, type: 3}
+  canvas: {fileID: 1141460956}
+  ID: 
+  displayID: {fileID: 434995444}
 --- !u!1 &1524648832
 GameObject:
   m_ObjectHideFlags: 0
@@ -2506,6 +2535,8 @@ MonoBehaviour:
   cam: {fileID: 939036736}
   canvas: {fileID: 1979846905}
   rt: {fileID: 8400000, guid: cbc6cef411db7e04296ab57bc392e381, type: 2}
+  drawMenu: {fileID: 1531019881}
+  cutoutLoader: {fileID: 1141460956}
 --- !u!64 &1643687099
 MeshCollider:
   m_ObjectHideFlags: 0

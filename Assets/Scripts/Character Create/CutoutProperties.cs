@@ -7,8 +7,9 @@ public class CutoutProperties : MonoBehaviour
 {
     public string ImageID;
 
-    private void Awake()
+    public void TapOnButton()
     {
-        GetComponent<Button>().onClick.AddListener(delegate { GameObject.Find("Draw").GetComponent<DrawingScript>().loadCanvas(gameObject); });
+        DrawingScript loader = GameObject.Find("Draw").GetComponent<DrawingScript>();
+        loader.loadCanvas(gameObject);
     }
 }

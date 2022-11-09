@@ -37,8 +37,8 @@ public class LoadCutouts : MonoBehaviour
             iButton.transform.localPosition = latestButton.transform.localPosition;
             iButton.transform.localPosition = new Vector3(iButton.transform.localPosition.x + 170, iButton.transform.localPosition.y, iButton.transform.localPosition.z);
             latestButton = iButton;
-            iButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Path.GetFileName(file);
-            iButton.GetComponent<CutoutProperties>().ImageID = Path.GetFileName(file);
+            iButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Path.GetFileName(file).Substring(0, Path.GetFileName(file).Length - 4);
+            iButton.GetComponent<CutoutProperties>().ImageID = Path.GetFileName(file).Substring(0, Path.GetFileName(file).Length - 4);
         }
     }
 

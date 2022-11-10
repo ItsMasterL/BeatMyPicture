@@ -12,8 +12,8 @@ public class JSONWriter : MonoBehaviour
         public int FrameID = 0; //Not editable
         public string image = "000"; //Coresponds with cutout. Default to 000 if not found
         public float seconds = 0.5f; //Default to 0.5f if <= 0
-        public float movex = 0; //pos is forward, neg is backward
-        public float movey = 0; //pos is up, neg is down
+        public float movex = 0; //pos is forward, neg is backward || additive
+        public float movey = 0; //pos is up, neg is down || additive
         public bool invincible = false; //This can be abused. Try not to though.
         public float damage = 0; //absolute value
         public float dmgxoffset = 0; //pos is forward, neg is backward

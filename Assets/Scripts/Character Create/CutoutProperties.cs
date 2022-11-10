@@ -6,6 +6,12 @@ using UnityEngine.UI;
 public class CutoutProperties : MonoBehaviour
 {
     public string ImageID;
+    public float xPos;
+
+    private void Start()
+    {
+        xPos = transform.localPosition.x;
+    }
 
     public void TapOnButton()
     {

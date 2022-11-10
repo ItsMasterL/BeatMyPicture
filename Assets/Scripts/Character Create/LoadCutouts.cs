@@ -7,12 +7,15 @@ using TMPro;
 public class LoadCutouts : MonoBehaviour
 {
     public GameObject NewButton;
+    public GameObject NewBg;
     public GameObject button;
     public GameObject canvas;
     GameObject latestButton;
 
     public string ID;
     public TextMeshProUGUI displayID;
+
+    public GameObject scrollbar;
 
     // Start is called before the first frame update
     void Start()
@@ -40,13 +43,21 @@ public class LoadCutouts : MonoBehaviour
             iButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Path.GetFileName(file).Substring(0, Path.GetFileName(file).Length - 4);
             iButton.GetComponent<CutoutProperties>().ImageID = Path.GetFileName(file).Substring(0, Path.GetFileName(file).Length - 4);
         }
+        NewBg.transform.SetAsLastSibling();
+        NewButton.transform.SetAsLastSibling();
+        scrollbar.GetComponent<ScrollCutouts>().Refresh();
     }
 
     public void NewImage()
     {
         string[] dir = Directory.GetFiles(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Cutouts");
-
-        ID = (dir.Length).ToString("000");
+        int i = 0;
+        ID = "000";
+        while (File.Exists(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Cutouts" + Path.DirectorySeparatorChar + ID + ".png"))
+        {
+            i++;
+            ID = (i).ToString("000");
+        }
         displayID.text = ID;
     }
 }

@@ -44,6 +44,7 @@ public class DrawingScript : MonoBehaviour
         {
             canvas.clearFlags = CameraClearFlags.Nothing;
             drawMenu.SetActive(false);
+            cutoutLoader.GetComponent<LoadCutouts>().LoadImages();
         }
 
         if (reset == true)
@@ -125,5 +126,19 @@ public class DrawingScript : MonoBehaviour
             imageLoadPlane.GetComponent<RawImage>().texture = tex;
             imageLoadCanvas.gameObject.transform.localPosition = new Vector3(imageLoadCanvas.transform.localPosition.x, imageLoadCanvas.transform.localPosition.y, 89);
         }
+    }
+
+    public void deleteCanvas()
+    {
+        string path = OpenTemplate.carryover;
+        if (File.Exists(path + Path.DirectorySeparatorChar + "Cutouts" + Path.DirectorySeparatorChar + cutoutLoader.GetComponent<LoadCutouts>().ID + ".png"))
+        {
+            File.Delete(path + Path.DirectorySeparatorChar + "Cutouts" + Path.DirectorySeparatorChar + cutoutLoader.GetComponent<LoadCutouts>().ID + ".png");
+            Debug.Log("Deleted " + cutoutLoader.GetComponent<LoadCutouts>().ID + ".png");
+        } else
+        {
+            Debug.Log("Failed");
+        }
+        clearCanvas();
     }
 }

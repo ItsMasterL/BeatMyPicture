@@ -17,6 +17,7 @@ public class OpenTemplate : MonoBehaviour
         if (check.GetComponent<NameCheck>().okay == true)
         {
             Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input);
+            Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input + Path.DirectorySeparatorChar + "Cutouts");
             carryover = Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input;
             newtemplate = true;
             SceneManager.LoadScene("TempCreate");

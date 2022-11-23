@@ -125,6 +125,9 @@ public class DrawingScript : MonoBehaviour
             tex.LoadImage(fileData);
             imageLoadPlane.GetComponent<RawImage>().texture = tex;
             imageLoadCanvas.gameObject.transform.localPosition = new Vector3(imageLoadCanvas.transform.localPosition.x, imageLoadCanvas.transform.localPosition.y, 89);
+        } else
+        {
+            cutoutLoader.GetComponent<LoadCutouts>().LoadImages();
         }
     }
 

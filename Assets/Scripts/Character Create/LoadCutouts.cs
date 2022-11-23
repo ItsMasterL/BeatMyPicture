@@ -27,7 +27,7 @@ public class LoadCutouts : MonoBehaviour
     {
         latestButton = NewButton;
 
-        foreach (GameObject i in GameObject.FindGameObjectsWithTag("FileRead"))
+        foreach (GameObject i in GameObject.FindGameObjectsWithTag("FileReadCutout"))
         {
             Destroy(i);
         }

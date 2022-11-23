@@ -148,7 +148,7 @@ GameObject:
   - component: {fileID: 1252986934269538091}
   m_Layer: 5
   m_Name: Image ID
-  m_TagString: FileRead
+  m_TagString: FileReadCutout
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -277,4 +277,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ImageID: 
-  tapped: 0
+  xPos: 0

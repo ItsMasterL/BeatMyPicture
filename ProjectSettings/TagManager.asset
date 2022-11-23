@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - FileRead
+  - FileReadCutout
+  - FileReadFrame
+  - FileReadSet
   layers:
   - Default
   - TransparentFX

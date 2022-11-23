@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ScrollCutouts : MonoBehaviour
+public class ScrollFrames : MonoBehaviour
 {
     public GameObject[] buttons;
     public GameObject first;
@@ -25,8 +25,9 @@ public class ScrollCutouts : MonoBehaviour
         {
             buttons[i] = null;
         }
-        buttons = GameObject.FindGameObjectsWithTag("FileReadCutout");
+        buttons = GameObject.FindGameObjectsWithTag("FileReadFrame");
         first = buttons[0].gameObject;
+        Debug.Log(first.name);
         last = buttons[buttons.Length - 1].gameObject;
         enableScroll = false;
         if (buttons.Length > 3) enableScroll = true;
@@ -45,7 +46,7 @@ public class ScrollCutouts : MonoBehaviour
                     return;
                 }
             i.transform.localPosition = new Vector3
-                    (i.GetComponent<CutoutProperties>().xPos - GetComponent<Scrollbar>().value * (GetComponent<Scrollbar>().numberOfSteps),
+                    (i.GetComponent<FrameProperties>().xPos - GetComponent<Scrollbar>().value * (GetComponent<Scrollbar>().numberOfSteps),
                     i.transform.localPosition.y, i.transform.localPosition.z);
         }
     }

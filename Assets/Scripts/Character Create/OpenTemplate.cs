@@ -18,6 +18,7 @@ public class OpenTemplate : MonoBehaviour
         {
             Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input);
             Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input + Path.DirectorySeparatorChar + "Cutouts");
+            Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input + Path.DirectorySeparatorChar + "Frames");
             carryover = Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input;
             newtemplate = true;
             SceneManager.LoadScene("TempCreate");
@@ -26,8 +27,18 @@ public class OpenTemplate : MonoBehaviour
 
     public void Open()
     {
-            carryover = gameObject.GetComponent<LoadTemplate>().FilePath;
-            newtemplate = false;
-            SceneManager.LoadScene("TempCreate");
+        carryover = gameObject.GetComponent<LoadTemplate>().FilePath;
+        if (!Directory.Exists(carryover + Path.DirectorySeparatorChar + "Cutouts"))
+        {
+            Directory.CreateDirectory(carryover + Path.DirectorySeparatorChar + "Cutouts");
+            Debug.Log("Created missing Cutouts folder");
+        }
+        if (!Directory.Exists(carryover + Path.DirectorySeparatorChar + "Frames"))
+        {
+            Directory.CreateDirectory(carryover + Path.DirectorySeparatorChar + "Frames");
+            Debug.Log("Created missing Frames folder");
+        }
+        newtemplate = false;
+        SceneManager.LoadScene("TempCreate");
     }
 }

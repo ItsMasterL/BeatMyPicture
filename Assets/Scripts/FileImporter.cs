@@ -15,7 +15,7 @@ public class FileImporter : MonoBehaviour
             {
 #if UNITY_ANDROID
                 // Use MIMEs on Android
-                string[] fileTypes = new string[] { "MP3" };
+                string[] fileTypes = new string[] { "audio/mpeg", "MP3" };
 #else
 			// Use UTIs on iOS
 			string[] fileTypes = new string[] { "public.audio" }; //hehe future thinking

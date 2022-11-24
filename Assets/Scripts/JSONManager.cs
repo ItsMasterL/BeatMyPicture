@@ -13,14 +13,30 @@ public class JSONManager : MonoBehaviour
     public GameObject canvas;
     GameObject latestButton;
 
+    public GameObject setNewButton;
+    public GameObject setNewBg;
+    public GameObject setButton;
+    GameObject setLatestButton;
+
+    public GameObject FINew;
+    //public GameObject FINewBg;
+    public GameObject FIInput;
+    GameObject FIlatest;
+
     public string ID;
     public TextMeshProUGUI displayID;
 
+    public string setID;
+    public TextMeshProUGUI setDisplayID;
+
     public GameObject scrollbar;
+    public GameObject setScrollbar;
+    public GameObject FIScrollbar;
 
     public GameObject frameMenu;
+    public GameObject setMenu;
 
-    #region All the game objects to read data from
+    #region All the game objects to read data from for frames
     [Space(10)]
     public GameObject frameimageid;
     public GameObject frametime;
@@ -39,11 +55,29 @@ public class JSONManager : MonoBehaviour
     public GameObject prtime;
     public GameObject primageid;
     public GameObject nextframe;
-    #endregion 
+    #endregion
+
+    #region All the game objects to read data from for sets
+    [Space(10)]
+    public GameObject idle;
+    public GameObject ground;
+    public GameObject up;
+    public GameObject down;
+    public GameObject forward;
+    public GameObject backward;
+    public GameObject attack;
+    public GameObject special;
+    public GameObject taunt;
+    public GameObject jump;
+    public GameObject super;
+    public GameObject exact;
+    public GameObject[] frameorder;
+    #endregion
 
     private void Start()
     {
         loadFrameButton();
+        loadSetButton();
     }
 
     [System.Serializable]
@@ -73,18 +107,25 @@ public class JSONManager : MonoBehaviour
     [System.Serializable]
     public class AnimSet
     {
-        public string SetName;
+        public string Version = "0.0.1"; //Not in editor
         public int SetID; //not editable
-        public Frame[] frame;
+        public List<string> frameIDs;
+        //If multiple are assigned the below booleans, pick at random. Prioritize moves with most matching inputs otherwise
+        public bool idle; //Ignore every other bool if toggled
+        public bool whenGrounded; //Will the animation play only if on the ground, or only if in the air? (Yes, this means no shared arial/ground moves)
+        public bool up; //Jumps will happen after a few frames to allow an up attack if tap jump is on (template properties)
+        public bool down;
+        public bool forward;
+        public bool backward;
+        public bool attack;
+        public bool special;
+        public bool taunt;
+        public bool jump;
+        public bool superspecial; //Only available when under 25% health
+        public bool exactInput; //for example, can you taunt while holding an input or does it have to be neutral taunt
+        public bool isPlaying; //Not in editor
     }
     
-    [System.Serializable]
-    public class CharacterAnimations //The main one
-    {
-        public AnimSet[] animSets;
-    }
-
-    public CharacterAnimations Anim = new CharacterAnimations();
     public AnimSet Set = new AnimSet();
     public Frame frame = new Frame();
     
@@ -100,6 +141,25 @@ public class JSONManager : MonoBehaviour
             ID = (i).ToString("000");
         }
         displayID.text = "Frame " + ID;
+    }
+
+    public void newSetJSON()
+    {
+        string[] dir = Directory.GetFiles(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sets");
+        int i = 0;
+        setID = "000";
+        while (File.Exists(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sets" + Path.DirectorySeparatorChar + setID + ".json"))
+        {
+            i++;
+            setID = (i).ToString("000");
+        }
+        setDisplayID.text = "Frame Set " + setID;
+    }
+
+    public void newFrameOrder()
+    {
+        Set.frameIDs.Add("000");
+        loadFrameInputs();
     }
 
     public void loadFrameButton()
@@ -125,6 +185,59 @@ public class JSONManager : MonoBehaviour
         NewBg.transform.SetAsLastSibling();
         NewButton.transform.SetAsLastSibling();
         scrollbar.GetComponent<ScrollFrames>().Refresh();
+    }
+
+    public void loadSetButton()
+    {
+        setLatestButton = setNewButton;
+
+        foreach (GameObject i in GameObject.FindGameObjectsWithTag("FileReadSet"))
+        {
+            Destroy(i);
+        }
+
+        string[] dir = Directory.GetFiles(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sets");
+
+        foreach (string file in dir)
+        {
+            GameObject iButton = Instantiate(setButton, canvas.transform);
+            Debug.Log(iButton.name);
+            iButton.transform.localPosition = setLatestButton.transform.localPosition;
+            iButton.transform.localPosition = new Vector3(iButton.transform.localPosition.x + 170, iButton.transform.localPosition.y, iButton.transform.localPosition.z);
+            setLatestButton = iButton;
+            iButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Path.GetFileName(file).Substring(0, Path.GetFileName(file).Length - 5);
+            iButton.GetComponent<SetProperties>().SetID = Path.GetFileName(file).Substring(0, Path.GetFileName(file).Length - 5);
+        }
+        setNewBg.transform.SetAsLastSibling();
+        setNewButton.transform.SetAsLastSibling();
+        setScrollbar.GetComponent<ScrollSets>().Refresh();
+    }
+
+    public void loadFrameInputs()
+    {
+        FIlatest = FINew;
+
+        foreach (GameObject i in GameObject.FindGameObjectsWithTag("FrameOrder"))
+        {
+            Destroy(i);
+        }
+
+        string[] frameOrder = Set.frameIDs.ToArray();
+        int ii = 0;
+
+        foreach (string frame in frameOrder)
+        {
+            GameObject input = Instantiate(FIInput, setMenu.transform);
+            input.transform.localPosition = FIlatest.transform.localPosition;
+            input.transform.localPosition = new Vector3(input.transform.localPosition.x, input.transform.localPosition.y - 111, input.transform.localPosition.z);
+            FIlatest = input;
+            input.GetComponent<FrameInputProperties>().index = ii;
+            input.GetComponent<TMP_InputField>().text = frame;
+            ii++;
+        }
+        //FINewBg.transform.SetAsLastSibling();
+        FINew.transform.SetAsLastSibling();
+        FIScrollbar.GetComponent<ScrollFrameInput>().Refresh();
     }
 
     public void loadFrameJSON(GameObject loader)
@@ -161,6 +274,41 @@ public class JSONManager : MonoBehaviour
         else
         {
             loadFrameButton();
+        }
+    }
+
+    public void loadSetJSON(GameObject loader)
+    {
+        setID = loader.GetComponent<SetProperties>().SetID;
+        setDisplayID.text = "Frame Set " + setID;
+        string path = OpenTemplate.carryover;
+        setMenu.SetActive(true);
+        if (File.Exists(path + Path.DirectorySeparatorChar + "Sets" + Path.DirectorySeparatorChar + setID + ".json"))
+        {
+            string jsonstuff = File.ReadAllText(path + Path.DirectorySeparatorChar + "Sets" + Path.DirectorySeparatorChar + setID + ".json");
+            Set = JsonUtility.FromJson<AnimSet>(jsonstuff);
+
+            if (Set.Version == "0.0.1")
+            {
+                //generate input fields for frames here
+                idle.GetComponent<Toggle>().isOn = Set.idle;
+                ground.GetComponent<Toggle>().isOn = Set.whenGrounded;
+                up.GetComponent<Toggle>().isOn = Set.up;
+                down.GetComponent<Toggle>().isOn = Set.down;
+                forward.GetComponent<Toggle>().isOn = Set.forward;
+                backward.GetComponent<Toggle>().isOn = Set.backward;
+                attack.GetComponent<Toggle>().isOn = Set.attack;
+                special.GetComponent<Toggle>().isOn = Set.special;
+                taunt.GetComponent<Toggle>().isOn = Set.taunt;
+                jump.GetComponent<Toggle>().isOn = Set.jump;
+                super.GetComponent<Toggle>().isOn = Set.superspecial;
+                exact.GetComponent<Toggle>().isOn = Set.exactInput;
+                loadFrameInputs();
+            }
+        }
+        else
+        {
+            loadSetButton();
         }
     }
 
@@ -238,20 +386,39 @@ public class JSONManager : MonoBehaviour
 
 
 
-        saveallJSON();
+        string Output = JsonUtility.ToJson(frame);
+        File.WriteAllText(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Frames" + Path.DirectorySeparatorChar + ID + ".json", Output);
         clearFrameMenu();
     }
 
-    public void saveallJSON()
+    public void saveSetJSON()
     {
-        string Output1 = JsonUtility.ToJson(Anim);
-        string Output2 = JsonUtility.ToJson(Set);
-        string Output3 = JsonUtility.ToJson(frame);
+        int i = 0;
+        foreach(GameObject obj in GameObject.FindGameObjectsWithTag("FrameOrder"))
+        {
+            if (obj.GetComponent<TMP_InputField>().text != "")
+                Set.frameIDs[i] = obj.GetComponent<TMP_InputField>().text;
+            i++;
+        }
+        Set.SetID = int.Parse(setID);
+        Set.idle = idle.GetComponent<Toggle>().isOn;
+        Set.whenGrounded = ground.GetComponent<Toggle>().isOn;
+        Set.up = up.GetComponent<Toggle>().isOn;
+        Set.down = down.GetComponent<Toggle>().isOn;
+        Set.forward = forward.GetComponent<Toggle>().isOn;
+        Set.backward = backward.GetComponent<Toggle>().isOn;
+        Set.attack = attack.GetComponent<Toggle>().isOn;
+        Set.special = special.GetComponent<Toggle>().isOn;
+        Set.taunt = taunt.GetComponent<Toggle>().isOn;
+        Set.jump = jump.GetComponent<Toggle>().isOn;
+        Set.superspecial = super.GetComponent<Toggle>().isOn;
+        Set.exactInput = exact.GetComponent<Toggle>().isOn;
 
-        File.WriteAllText(OpenTemplate.carryover + Path.DirectorySeparatorChar + "anim.json", Output1);
-        File.WriteAllText(OpenTemplate.carryover + Path.DirectorySeparatorChar + "animset.json", Output2);
-        File.WriteAllText(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Frames" + Path.DirectorySeparatorChar + ID + ".json", Output3);
+        string Output = JsonUtility.ToJson(Set);
+        File.WriteAllText(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sets" + Path.DirectorySeparatorChar + setID + ".json", Output);
+        clearSetMenu();
     }
+    
 
     public void clearFrameMenu()
     {
@@ -293,6 +460,44 @@ public class JSONManager : MonoBehaviour
         loadFrameButton();
     }
 
+    public void clearSetMenu()
+    {
+        idle.GetComponent<Toggle>().isOn = false;
+        ground.GetComponent<Toggle>().isOn = false;
+        up.GetComponent<Toggle>().isOn = false;
+        down.GetComponent<Toggle>().isOn = false;
+        forward.GetComponent<Toggle>().isOn = false;
+        backward.GetComponent<Toggle>().isOn = false;
+        attack.GetComponent<Toggle>().isOn = false;
+        special.GetComponent<Toggle>().isOn = false;
+        taunt.GetComponent<Toggle>().isOn = false;
+        jump.GetComponent<Toggle>().isOn = false;
+        super.GetComponent<Toggle>().isOn = false;
+        exact.GetComponent<Toggle>().isOn = false;
+
+        Set.frameIDs.Clear();
+        foreach(GameObject i in GameObject.FindGameObjectsWithTag("FrameOrder"))
+        {
+            Destroy(i);
+        }
+        Set.SetID = 0;
+        Set.idle = false;
+        Set.whenGrounded = false;
+        Set.up = false;
+        Set.down = false;
+        Set.forward = false;
+        Set.backward = false;
+        Set.attack = false;
+        Set.special = false;
+        Set.taunt = false;
+        Set.jump = false;
+        Set.superspecial = false;
+        Set.exactInput = false;
+
+        setMenu.SetActive(false);
+        loadSetButton();
+    }
+
     public void DeleteFrameJSON()
     {
         string path = OpenTemplate.carryover;
@@ -306,5 +511,20 @@ public class JSONManager : MonoBehaviour
             Debug.Log("Failed");
         }
         clearFrameMenu();
+    }
+
+    public void DeleteSetJSON()
+    {
+        string path = OpenTemplate.carryover;
+        if (File.Exists(path + Path.DirectorySeparatorChar + "Sets" + Path.DirectorySeparatorChar + setID + ".json"))
+        {
+            File.Delete(path + Path.DirectorySeparatorChar + "Sets" + Path.DirectorySeparatorChar + setID + ".json");
+            Debug.Log("Deleted " + setID + ".json");
+        }
+        else
+        {
+            Debug.Log("Failed");
+        }
+        clearSetMenu();
     }
 }

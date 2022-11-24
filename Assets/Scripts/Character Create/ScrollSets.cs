@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ScrollFrames : MonoBehaviour
+public class ScrollSets : MonoBehaviour
 {
     public GameObject[] buttons;
     public GameObject first;
@@ -25,7 +25,7 @@ public class ScrollFrames : MonoBehaviour
         {
             buttons[i] = null;
         }
-        buttons = GameObject.FindGameObjectsWithTag("FileReadFrame");
+        buttons = GameObject.FindGameObjectsWithTag("FileReadSet");
         first = buttons[0].gameObject;
         last = buttons[buttons.Length - 1].gameObject;
         enableScroll = false;
@@ -45,7 +45,7 @@ public class ScrollFrames : MonoBehaviour
                     return;
                 }
             i.transform.localPosition = new Vector3
-                    (i.GetComponent<FrameProperties>().xPos - GetComponent<Scrollbar>().value * (GetComponent<Scrollbar>().numberOfSteps),
+                    (i.GetComponent<SetProperties>().xPos - GetComponent<Scrollbar>().value * (GetComponent<Scrollbar>().numberOfSteps),
                     i.transform.localPosition.y, i.transform.localPosition.z);
         }
     }

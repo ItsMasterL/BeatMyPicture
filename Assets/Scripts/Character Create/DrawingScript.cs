@@ -131,6 +131,35 @@ public class DrawingScript : MonoBehaviour
         }
     }
 
+    public void copyLoadCanvas(GameObject ID)
+    {
+        cutoutLoader.GetComponent<LoadCutouts>().ID = ID.GetComponent<TMP_InputField>().text;
+        displayID.text = cutoutLoader.GetComponent<LoadCutouts>().ID;
+
+        Texture2D tex = null;
+        byte[] fileData;
+        string path = OpenTemplate.carryover;
+
+        drawMenu.SetActive(true);
+        imageLoadCanvas.SetActive(true);
+
+        if (File.Exists(path + Path.DirectorySeparatorChar + "Cutouts" + Path.DirectorySeparatorChar + cutoutLoader.GetComponent<LoadCutouts>().ID + ".png"))
+        {
+            fileData = File.ReadAllBytes(path + Path.DirectorySeparatorChar + "Cutouts" + Path.DirectorySeparatorChar + cutoutLoader.GetComponent<LoadCutouts>().ID + ".png");
+            tex = new Texture2D(300, 300); //if its not the regular size for whatever reason, it'll resize automatically but this can be bad if theres anti-aliasing or something
+            tex.filterMode = FilterMode.Point;
+            tex.LoadImage(fileData);
+            imageLoadPlane.GetComponent<RawImage>().texture = tex;
+            imageLoadCanvas.gameObject.transform.localPosition = new Vector3(imageLoadCanvas.transform.localPosition.x, imageLoadCanvas.transform.localPosition.y, 89);
+            cutoutLoader.GetComponent<LoadCutouts>().NewImage();
+        }
+        else
+        {
+            cutoutLoader.GetComponent<LoadCutouts>().NewImage();
+            cutoutLoader.GetComponent<LoadCutouts>().LoadImages();
+        }
+    }
+
     public void deleteCanvas()
     {
         string path = OpenTemplate.carryover;

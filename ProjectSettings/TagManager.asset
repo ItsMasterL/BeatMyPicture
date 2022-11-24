@@ -8,6 +8,7 @@ TagManager:
   - FileReadCutout
   - FileReadFrame
   - FileReadSet
+  - FrameOrder
   layers:
   - Default
   - TransparentFX

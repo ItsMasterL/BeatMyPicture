@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ScrollFrames : MonoBehaviour
+public class ScrollFrameInput : MonoBehaviour
 {
     public GameObject[] buttons;
     public GameObject first;
@@ -25,13 +25,13 @@ public class ScrollFrames : MonoBehaviour
         {
             buttons[i] = null;
         }
-        buttons = GameObject.FindGameObjectsWithTag("FileReadFrame");
+        buttons = GameObject.FindGameObjectsWithTag("FrameOrder");
         first = buttons[0].gameObject;
         last = buttons[buttons.Length - 1].gameObject;
         enableScroll = false;
         if (buttons.Length > 3) enableScroll = true;
-        lastPos = last.transform.localPosition.x - first.transform.localPosition.x;
-        GetComponent<Scrollbar>().numberOfSteps = (buttons.Length - 1) * 170;
+        lastPos = last.transform.localPosition.y - first.transform.localPosition.y;
+        GetComponent<Scrollbar>().numberOfSteps = (buttons.Length - 1) * 111;
     }
 
     public void Slidin()
@@ -45,8 +45,8 @@ public class ScrollFrames : MonoBehaviour
                     return;
                 }
             i.transform.localPosition = new Vector3
-                    (i.GetComponent<FrameProperties>().xPos - GetComponent<Scrollbar>().value * (GetComponent<Scrollbar>().numberOfSteps),
-                    i.transform.localPosition.y, i.transform.localPosition.z);
+                    (i.transform.localPosition.x,
+                    i.GetComponent<FrameInputProperties>().yPos + GetComponent<Scrollbar>().value * (GetComponent<Scrollbar>().numberOfSteps), i.transform.localPosition.z);
         }
     }
 }

@@ -19,6 +19,7 @@ public class OpenTemplate : MonoBehaviour
             Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input);
             Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input + Path.DirectorySeparatorChar + "Cutouts");
             Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input + Path.DirectorySeparatorChar + "Frames");
+            Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input + Path.DirectorySeparatorChar + "Sets");
             carryover = Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input;
             newtemplate = true;
             SceneManager.LoadScene("TempCreate");
@@ -37,6 +38,11 @@ public class OpenTemplate : MonoBehaviour
         {
             Directory.CreateDirectory(carryover + Path.DirectorySeparatorChar + "Frames");
             Debug.Log("Created missing Frames folder");
+        }
+        if (!Directory.Exists(carryover + Path.DirectorySeparatorChar + "Sets"))
+        {
+            Directory.CreateDirectory(carryover + Path.DirectorySeparatorChar + "Sets");
+            Debug.Log("Created missing Sets folder");
         }
         newtemplate = false;
         SceneManager.LoadScene("TempCreate");

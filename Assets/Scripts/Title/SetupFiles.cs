@@ -20,5 +20,7 @@ public class SetupFiles : MonoBehaviour
         Directory.CreateDirectory(path + Path.DirectorySeparatorChar + "Fighters");
         Directory.CreateDirectory(path + Path.DirectorySeparatorChar + "Stages");
         Directory.CreateDirectory(path + Path.DirectorySeparatorChar + "Templates");
+
+
     }
 }

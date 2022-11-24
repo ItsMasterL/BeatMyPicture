@@ -46,7 +46,7 @@ public class ScrollFrameInput : MonoBehaviour
                 }
             i.transform.localPosition = new Vector3
                     (i.transform.localPosition.x,
-                    i.GetComponent<FrameInputProperties>().yPos + GetComponent<Scrollbar>().value * (GetComponent<Scrollbar>().numberOfSteps), i.transform.localPosition.z);
+                    i.GetComponent<FrameInputProperties>().yPos + GetComponent<Scrollbar>().value * (GetComponent<Scrollbar>().numberOfSteps) + 25.712f, i.transform.localPosition.z);
         }
     }
 }

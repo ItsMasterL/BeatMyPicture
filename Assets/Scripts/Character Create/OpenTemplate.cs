@@ -20,6 +20,7 @@ public class OpenTemplate : MonoBehaviour
             Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input + Path.DirectorySeparatorChar + "Cutouts");
             Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input + Path.DirectorySeparatorChar + "Frames");
             Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input + Path.DirectorySeparatorChar + "Sets");
+            Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input + Path.DirectorySeparatorChar + "Sound");
             carryover = Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input;
             newtemplate = true;
             SceneManager.LoadScene("TempCreate");
@@ -43,6 +44,11 @@ public class OpenTemplate : MonoBehaviour
         {
             Directory.CreateDirectory(carryover + Path.DirectorySeparatorChar + "Sets");
             Debug.Log("Created missing Sets folder");
+        }
+        if (!Directory.Exists(carryover + Path.DirectorySeparatorChar + "Sound"))
+        {
+            Directory.CreateDirectory(carryover + Path.DirectorySeparatorChar + "Sound");
+            Debug.Log("Created missing Sound folder");
         }
         newtemplate = false;
         SceneManager.LoadScene("TempCreate");

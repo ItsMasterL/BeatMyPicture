@@ -29,12 +29,15 @@ public class JSONManager : MonoBehaviour
     public string setID;
     public TextMeshProUGUI setDisplayID;
 
+    public string audioID;
+
     public GameObject scrollbar;
     public GameObject setScrollbar;
     public GameObject FIScrollbar;
 
     public GameObject frameMenu;
     public GameObject setMenu;
+    public GameObject setMask;
 
     #region All the game objects to read data from for frames
     [Space(10)]
@@ -125,11 +128,21 @@ public class JSONManager : MonoBehaviour
         public bool exactInput; //for example, can you taunt while holding an input or does it have to be neutral taunt
         public bool isPlaying; //Not in editor
     }
+
+    [System.Serializable]
+    public class AudioAndDescriptions
+    {
+        public List<int> SoundIDs;
+        public List<string> IncludedSounds;
+        public List<string> PoseDescriptions;
+        public List<string> SoundDescriptions;
+        public List<float> SoundLimits;
+    }
     
     public AnimSet Set = new AnimSet();
     public Frame frame = new Frame();
+    public AudioAndDescriptions desc = new AudioAndDescriptions();
     
-
     public void newFrameJSON()
     {
         string[] dir = Directory.GetFiles(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Frames");
@@ -227,7 +240,7 @@ public class JSONManager : MonoBehaviour
 
         foreach (string frame in frameOrder)
         {
-            GameObject input = Instantiate(FIInput, setMenu.transform);
+            GameObject input = Instantiate(FIInput, setMask.transform);
             input.transform.localPosition = FIlatest.transform.localPosition;
             input.transform.localPosition = new Vector3(input.transform.localPosition.x, input.transform.localPosition.y - 111, input.transform.localPosition.z);
             FIlatest = input;
@@ -418,7 +431,6 @@ public class JSONManager : MonoBehaviour
         File.WriteAllText(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sets" + Path.DirectorySeparatorChar + setID + ".json", Output);
         clearSetMenu();
     }
-    
 
     public void clearFrameMenu()
     {
@@ -526,5 +538,19 @@ public class JSONManager : MonoBehaviour
             Debug.Log("Failed");
         }
         clearSetMenu();
+    }
+
+    public void ImportAudio()
+    {
+        FileImporter.GetFile("audio");
+        int i = 0;
+        audioID = "000";
+        while (File.Exists(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".mp3"))
+        {
+            i++;
+            audioID = (i).ToString("000");
+        }
+        File.Copy(FileImporter.LastResult, OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".mp3");
+        desc.IncludedSounds.Add(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".mp3");
     }
 }

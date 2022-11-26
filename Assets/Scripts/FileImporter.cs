@@ -10,12 +10,15 @@ public class FileImporter : MonoBehaviour
     {
             // Don't attempt to import/export files if the file picker is already open
             if (NativeFilePicker.IsFilePickerBusy())
-                return;
+        {
+            Debug.Log("Busy!");
+            return;
+        }
             if (filetype == "audio")
             {
 #if UNITY_ANDROID
                 // Use MIMEs on Android
-                string[] fileTypes = new string[] { "audio/mpeg", "MP3" };
+                string[] fileTypes = new string[] { "audio/mpeg", "MP3", "audio/x-wav", "WAV", "audio/ogg", "OGG" };
 #else
 			// Use UTIs on iOS
 			string[] fileTypes = new string[] { "public.audio" }; //hehe future thinking

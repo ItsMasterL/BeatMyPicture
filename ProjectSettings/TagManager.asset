@@ -9,6 +9,8 @@ TagManager:
   - FileReadFrame
   - FileReadSet
   - FrameOrder
+  - AudioImports
+  - AudioRecord
   layers:
   - Default
   - TransparentFX

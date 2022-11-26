@@ -12,32 +12,46 @@ public class JSONManager : MonoBehaviour
     public GameObject button;
     public GameObject canvas;
     GameObject latestButton;
-
+    [Space(10)]
     public GameObject setNewButton;
     public GameObject setNewBg;
     public GameObject setButton;
     GameObject setLatestButton;
-
+    [Space(10)]
     public GameObject FINew;
     //public GameObject FINewBg;
     public GameObject FIInput;
     GameObject FIlatest;
-
+    [Space(10)]
+    public GameObject ImpAudNew;
+    public GameObject ImpAudParent;
+    public GameObject ImpAudButton;
+    GameObject ImpAudlatest;
+    public GameObject RecAudParent;
+    public GameObject RecAudButton;
+    GameObject RecAudlatest;
+    [Space(10)]
     public string ID;
     public TextMeshProUGUI displayID;
-
+    [Space(10)]
     public string setID;
     public TextMeshProUGUI setDisplayID;
-
+    [Space(10)]
     public string audioID;
-
+    [Space(10)]
     public GameObject scrollbar;
     public GameObject setScrollbar;
     public GameObject FIScrollbar;
-
+    public GameObject ImpAudScrollbar;
+    [Space(10)]
     public GameObject frameMenu;
     public GameObject setMenu;
     public GameObject setMask;
+    [Space(10)]
+    public string SelectedImport;
+    public string SelectedRecording;
+    public GameObject recCount;
+    public GameObject loaderror;
 
     #region All the game objects to read data from for frames
     [Space(10)]
@@ -545,12 +559,139 @@ public class JSONManager : MonoBehaviour
         FileImporter.GetFile("audio");
         int i = 0;
         audioID = "000";
-        while (File.Exists(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".mp3"))
+        while (File.Exists(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".mp3") ||
+            File.Exists(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".wav") ||
+            File.Exists(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".ogg"))
         {
             i++;
             audioID = (i).ToString("000");
         }
+        if (FileImporter.LastResult.Substring(FileImporter.LastResult.Length - 3) == "mp3")
         File.Copy(FileImporter.LastResult, OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".mp3");
-        desc.IncludedSounds.Add(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".mp3");
+        if (FileImporter.LastResult.Substring(FileImporter.LastResult.Length - 3) == "wav")
+        File.Copy(FileImporter.LastResult, OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".wav");
+        if (FileImporter.LastResult.Substring(FileImporter.LastResult.Length - 3) == "ogg")
+        File.Copy(FileImporter.LastResult, OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".ogg");
+
+        //if file is too long to use as a sound effect
+        if (!GameObject.Find("PlaySound").GetComponent<AudioLoader>().IsAudioLengthValid(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar, audioID))
+        {
+            if (File.Exists(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".mp3"))
+                File.Delete(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".mp3");
+            if (File.Exists(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".wav"))
+                File.Delete(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".wav");
+            if (File.Exists(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".ogg"))
+                File.Delete(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".ogg");
+            loaderror.SetActive(true);
+        }
+        LoadAudioButtons();
+    }
+
+    public void LoadAudioButtons()
+    {
+        ImpAudlatest = ImpAudNew;
+        RecAudlatest = ImpAudNew;
+        bool ImpToggle;
+        if (!ImpAudParent.activeSelf)
+        {
+            ImpToggle = true;
+            ImpAudParent.SetActive(true);
+        }
+        else
+        {
+            ImpToggle = false;
+            RecAudParent.SetActive(true);
+        }
+
+        foreach (GameObject i in GameObject.FindGameObjectsWithTag("AudioImports"))
+        {
+            Destroy(i);
+        }
+        foreach (GameObject i in GameObject.FindGameObjectsWithTag("AudioRecord"))
+        {
+            Destroy(i);
+        }
+
+        string[] dir = Directory.GetFiles(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound");
+
+        desc.IncludedSounds.Clear();
+
+        foreach (string file in dir)
+        {
+            GameObject iButton = Instantiate(ImpAudButton, ImpAudParent.transform);
+            Debug.Log(iButton.name);
+            iButton.transform.localPosition = ImpAudlatest.transform.localPosition;
+            iButton.transform.localPosition = new Vector3(iButton.transform.localPosition.x + 150, iButton.transform.localPosition.y, iButton.transform.localPosition.z);
+            ImpAudlatest = iButton;
+            iButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Path.GetFileName(file).Substring(0, Path.GetFileName(file).Length - 4);
+            iButton.GetComponent<AudioProperties>().AudioID = Path.GetFileName(file).Substring(0, Path.GetFileName(file).Length - 4);
+            desc.IncludedSounds.Add(iButton.GetComponent<AudioProperties>().AudioID);
+        }
+        ImpAudNew.transform.SetAsLastSibling();
+        ImpAudScrollbar.GetComponent<AudioScroll>().Refresh();
+        
+        if (recCount.GetComponent<TMP_InputField>().text == "")
+        {
+            recCount.GetComponent<TMP_InputField>().text = "0";
+        }
+
+        if (desc.SoundIDs.Count > int.Parse(recCount.GetComponent<TMP_InputField>().text))
+        {
+            desc.SoundIDs.Clear();
+            desc.SoundDescriptions.Clear();
+            desc.SoundLimits.Clear();
+        }
+        desc.SoundIDs.Clear();
+        for (int i = 0; i < int.Parse(recCount.GetComponent<TMP_InputField>().text); i++)
+        {
+            GameObject iButton = Instantiate(RecAudButton, RecAudParent.transform);
+            Debug.Log(iButton.name);
+            iButton.transform.localPosition = RecAudlatest.transform.localPosition;
+            if (i > 0)
+            iButton.transform.localPosition = new Vector3(iButton.transform.localPosition.x + 150, iButton.transform.localPosition.y, iButton.transform.localPosition.z);
+            RecAudlatest = iButton;
+            iButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = i.ToString();
+            iButton.GetComponent<AudioProperties>().AudioID = i.ToString("000");
+            desc.SoundIDs.Add(int.Parse(iButton.GetComponent<AudioProperties>().AudioID));
+            if (desc.SoundDescriptions.Count < i + 1)
+            {
+                desc.SoundDescriptions.Add("");
+            }
+            if (desc.SoundLimits.Count < i + 1)
+            {
+                desc.SoundLimits.Add(2);
+            }
+        }
+        ImpAudNew.transform.SetAsLastSibling();
+        ImpAudScrollbar.GetComponent<AudioScroll>().Refresh();
+        if (ImpToggle == true)
+        {
+            ImpAudParent.SetActive(false);
+        }
+        else
+        {
+            RecAudParent.SetActive(false);
+        }
+    }
+
+    public void UpdateAudioDesc(GameObject Source)
+    {
+        desc.SoundDescriptions.RemoveAt(int.Parse(SelectedRecording));
+        desc.SoundDescriptions.Insert(int.Parse(SelectedRecording), Source.GetComponent<TMP_InputField>().text);
+        saveDescriptionsJSON();
+    }
+
+    public void UpdateAudioLimit(GameObject Source)
+    {
+        desc.SoundLimits.RemoveAt(int.Parse(SelectedRecording));
+        desc.SoundLimits.Insert(int.Parse(SelectedRecording), Source.GetComponent<Slider>().value);
+        saveDescriptionsJSON();
+    }
+
+    public void saveDescriptionsJSON()
+    {
+        string Output = JsonUtility.ToJson(desc);
+        File.WriteAllText(OpenTemplate.carryover + Path.DirectorySeparatorChar + "properties.json", Output);
+        LoadAudioButtons();
     }
 }

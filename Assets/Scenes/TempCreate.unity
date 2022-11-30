@@ -8599,7 +8599,7 @@ MonoBehaviour:
   SelectedImport: 
   SelectedRecording: 
   recCount: {fileID: 1657904488}
-  loaderror: {fileID: 0}
+  loaderror: {fileID: 1670129480}
   frameimageid: {fileID: 1777088017}
   frametime: {fileID: 1266105304}
   invincible: {fileID: 1062346397}
@@ -8897,7 +8897,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 486328990}
   m_TextViewport: {fileID: 1729742446}
   m_TextComponent: {fileID: 1651104100}
@@ -9174,8 +9174,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -193.03}
-  m_SizeDelta: {x: 750, y: 134.8591}
+  m_AnchoredPosition: {x: 0, y: -196.3}
+  m_SizeDelta: {x: 750, y: 159.63}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &501368375
 MonoBehaviour:
@@ -9347,7 +9347,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 541176847}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 480196353}
+        m_MethodName: DeleteAudio
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &541176847
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9421,8 +9432,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.00027466, y: -223}
-  m_SizeDelta: {x: 640, y: 40}
+  m_AnchoredPosition: {x: -0.00027466, y: -238.43}
+  m_SizeDelta: {x: 640, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &541719848
 MonoBehaviour:
@@ -12194,6 +12205,17 @@ MonoBehaviour:
       - m_Target: {fileID: 501368373}
         m_MethodName: SetActive
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1294631184}
+        m_MethodName: Refresh
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -23044,7 +23066,7 @@ RectTransform:
   m_AnchorMin: {x: 0.4, y: 0}
   m_AnchorMax: {x: 0.4, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 40, y: 0}
+  m_SizeDelta: {x: 60, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1498990121
 MonoBehaviour:
@@ -25942,6 +25964,17 @@ MonoBehaviour:
       - m_Target: {fileID: 501368373}
         m_MethodName: SetActive
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 1294631184}
+        m_MethodName: Refresh
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

@@ -27,7 +27,9 @@ public class AudioProperties : MonoBehaviour
             float[] limit = manager.desc.SoundLimits.ToArray();
             manager.SelectedRecording = AudioID;
             GameObject.Find("DescriptionInput").GetComponent<TMPro.TMP_InputField>().text = description[int.Parse(AudioID)];
+            GameObject.Find("DescriptionInput").GetComponent<TMPro.TMP_InputField>().interactable = true;
             GameObject.Find("LimitSlider").GetComponent<UnityEngine.UI.Slider>().value = limit[int.Parse(AudioID)];
+            GameObject.Find("LimitSlider").GetComponent<UnityEngine.UI.Slider>().interactable = true;
         }
     }
 }

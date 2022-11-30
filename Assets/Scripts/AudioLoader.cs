@@ -8,7 +8,7 @@ public class AudioLoader : MonoBehaviour
     [SerializeField]
     private List<AudioClip> songs;
     private AudioSource sound;
-    bool forcedWait;
+    float temptimer;
 
     public void Awake()
     {
@@ -52,17 +52,34 @@ public class AudioLoader : MonoBehaviour
 
         foreach (FileInfo songFile in songFiles)
         {
-            StartCoroutine(ConvertFilesToAudioClipCheck(songFile));
+            if (songFile.Name.Contains("meta"))
+            {
+                Debug.Log("Not valid");
+                return false;
+            }
+            else
+            {
+                string songName = songFile.FullName.ToString();
+                string url = string.Format("file://{0}", songName);
+                WWW www = new WWW(url);
+                songs.Add(www.GetAudioClip(false, true));
+            }
             sound.clip = songs[songs.Count - 1];
+            temptimer = 0;
+            while (sound.clip.length == 0 && temptimer < 1)
+            {
+                temptimer += 0.001f;
+            }
+            Debug.Log(sound.clip.length);
             if (sound.clip.length > 5)
             {
                 sound.clip = null;
                 songs.Clear();
-                forcedWait = false;
+                Debug.Log("Too Long");
                 return false;
             }
         }
-        forcedWait = false;
+        Debug.Log("Not too long, since it is " + sound.clip.length + " seconds long");
         return true;
     }
 
@@ -95,10 +112,8 @@ public class AudioLoader : MonoBehaviour
 
     private IEnumerator ConvertFilesToAudioClipCheck(FileInfo songFile)
     {
-        forcedWait = true;
         if (songFile.Name.Contains("meta"))
         {
-            forcedWait = false;
             yield break;
         }
         else
@@ -108,7 +123,6 @@ public class AudioLoader : MonoBehaviour
             WWW www = new WWW(url);
             yield return www;
             songs.Add(www.GetAudioClip(false, false));
-            forcedWait = false;
         }
     }
 
@@ -117,6 +131,5 @@ public class AudioLoader : MonoBehaviour
         sound.Stop();
         sound.clip = null;
         songs.Clear();
-        forcedWait = false;
     }
 }

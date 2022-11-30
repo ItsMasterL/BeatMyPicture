@@ -95,6 +95,7 @@ public class JSONManager : MonoBehaviour
     {
         loadFrameButton();
         loadSetButton();
+        LoadAudioButtons();
     }
 
     [System.Serializable]
@@ -228,7 +229,6 @@ public class JSONManager : MonoBehaviour
         foreach (string file in dir)
         {
             GameObject iButton = Instantiate(setButton, canvas.transform);
-            Debug.Log(iButton.name);
             iButton.transform.localPosition = setLatestButton.transform.localPosition;
             iButton.transform.localPosition = new Vector3(iButton.transform.localPosition.x + 170, iButton.transform.localPosition.y, iButton.transform.localPosition.z);
             setLatestButton = iButton;
@@ -574,7 +574,7 @@ public class JSONManager : MonoBehaviour
         File.Copy(FileImporter.LastResult, OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".ogg");
 
         //if file is too long to use as a sound effect
-        if (!GameObject.Find("PlaySound").GetComponent<AudioLoader>().IsAudioLengthValid(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar, audioID))
+        if (GameObject.Find("PlaySound").GetComponent<AudioLoader>().IsAudioLengthValid(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar, audioID) == false)
         {
             if (File.Exists(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".mp3"))
                 File.Delete(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + audioID + ".mp3");
@@ -589,6 +589,12 @@ public class JSONManager : MonoBehaviour
 
     public void LoadAudioButtons()
     {
+        if (File.Exists(OpenTemplate.carryover + Path.DirectorySeparatorChar + "properties.json"))
+        {
+            string jsonstuff = File.ReadAllText(OpenTemplate.carryover + Path.DirectorySeparatorChar + "properties.json");
+            desc = JsonUtility.FromJson<AudioAndDescriptions>(jsonstuff);
+        }
+
         ImpAudlatest = ImpAudNew;
         RecAudlatest = ImpAudNew;
         bool ImpToggle;
@@ -619,7 +625,6 @@ public class JSONManager : MonoBehaviour
         foreach (string file in dir)
         {
             GameObject iButton = Instantiate(ImpAudButton, ImpAudParent.transform);
-            Debug.Log(iButton.name);
             iButton.transform.localPosition = ImpAudlatest.transform.localPosition;
             iButton.transform.localPosition = new Vector3(iButton.transform.localPosition.x + 150, iButton.transform.localPosition.y, iButton.transform.localPosition.z);
             ImpAudlatest = iButton;
@@ -630,9 +635,9 @@ public class JSONManager : MonoBehaviour
         ImpAudNew.transform.SetAsLastSibling();
         ImpAudScrollbar.GetComponent<AudioScroll>().Refresh();
         
-        if (recCount.GetComponent<TMP_InputField>().text == "")
+        if (recCount.GetComponent<TMP_InputField>().text == "" && File.Exists(OpenTemplate.carryover + Path.DirectorySeparatorChar + "properties.json"))
         {
-            recCount.GetComponent<TMP_InputField>().text = "0";
+            recCount.GetComponent<TMP_InputField>().text = desc.SoundIDs.Count.ToString();
         }
 
         if (desc.SoundIDs.Count > int.Parse(recCount.GetComponent<TMP_InputField>().text))
@@ -645,7 +650,6 @@ public class JSONManager : MonoBehaviour
         for (int i = 0; i < int.Parse(recCount.GetComponent<TMP_InputField>().text); i++)
         {
             GameObject iButton = Instantiate(RecAudButton, RecAudParent.transform);
-            Debug.Log(iButton.name);
             iButton.transform.localPosition = RecAudlatest.transform.localPosition;
             if (i > 0)
             iButton.transform.localPosition = new Vector3(iButton.transform.localPosition.x + 150, iButton.transform.localPosition.y, iButton.transform.localPosition.z);
@@ -672,6 +676,18 @@ public class JSONManager : MonoBehaviour
         {
             RecAudParent.SetActive(false);
         }
+    }
+
+    public void DeleteAudio()
+    {
+        if (File.Exists(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + SelectedImport + ".mp3"))
+            File.Delete(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + SelectedImport + ".mp3");
+        if (File.Exists(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + SelectedImport + ".wav"))
+            File.Delete(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + SelectedImport + ".wav");
+        if (File.Exists(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + SelectedImport + ".ogg"))
+            File.Delete(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar + SelectedImport + ".ogg");
+        LoadAudioButtons();
+        
     }
 
     public void UpdateAudioDesc(GameObject Source)

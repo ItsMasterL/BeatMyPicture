@@ -31,6 +31,11 @@ public class JSONManager : MonoBehaviour
     public GameObject RecAudButton;
     GameObject RecAudlatest;
     [Space(10)]
+    public GameObject cutoutButton;
+    public GameObject cutoutNewPos;
+    public GameObject cutoutParent;
+    GameObject cutoutLatest;
+    [Space(10)]
     public string ID;
     public TextMeshProUGUI displayID;
     [Space(10)]
@@ -43,6 +48,7 @@ public class JSONManager : MonoBehaviour
     public GameObject setScrollbar;
     public GameObject FIScrollbar;
     public GameObject ImpAudScrollbar;
+    public GameObject cutoutScrollbar;
     [Space(10)]
     public GameObject frameMenu;
     public GameObject setMenu;
@@ -52,6 +58,9 @@ public class JSONManager : MonoBehaviour
     public string SelectedRecording;
     public GameObject recCount;
     public GameObject loaderror;
+    [Space(10)]
+    public GameObject poseMenu;
+    public string SelectedPose;
 
     #region All the game objects to read data from for frames
     [Space(10)]
@@ -96,6 +105,7 @@ public class JSONManager : MonoBehaviour
         loadFrameButton();
         loadSetButton();
         LoadAudioButtons();
+        LoadPoses();
     }
 
     [System.Serializable]
@@ -701,6 +711,58 @@ public class JSONManager : MonoBehaviour
     {
         desc.SoundLimits.RemoveAt(int.Parse(SelectedRecording));
         desc.SoundLimits.Insert(int.Parse(SelectedRecording), Source.GetComponent<Slider>().value);
+        saveDescriptionsJSON();
+    }
+
+    public void LoadPoses()
+    {
+        bool activeMenu;
+        if (!poseMenu.activeSelf)
+        {
+            activeMenu = false;
+            poseMenu.SetActive(true);
+        } else
+        {
+            activeMenu = true;
+        }
+
+        cutoutLatest = cutoutNewPos;
+
+        foreach (GameObject i in GameObject.FindGameObjectsWithTag("PoseDescCutout"))
+        {
+            Destroy(i);
+        }
+
+        string[] dir = Directory.GetFiles(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Cutouts");
+
+        foreach (string file in dir)
+        {
+            GameObject iButton = Instantiate(cutoutButton, cutoutParent.transform);
+            iButton.transform.localPosition = cutoutLatest.transform.localPosition;
+            iButton.transform.localPosition = new Vector3(iButton.transform.localPosition.x + 150, iButton.transform.localPosition.y, iButton.transform.localPosition.z);
+            cutoutLatest = iButton;
+            iButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Path.GetFileName(file).Substring(0, Path.GetFileName(file).Length - 4);
+            iButton.GetComponent<CutoutProperties>().ImageID = Path.GetFileName(file).Substring(0, Path.GetFileName(file).Length - 4);
+            desc.SoundIDs.Add(int.Parse(iButton.GetComponent<CutoutProperties>().ImageID));
+            if (desc.PoseDescriptions.Count < int.Parse(iButton.GetComponent<CutoutProperties>().ImageID) + 1)
+            {
+                desc.PoseDescriptions.Add("");
+            }
+        }
+        NewBg.transform.SetAsLastSibling();
+        NewButton.transform.SetAsLastSibling();
+        cutoutScrollbar.GetComponent<CutoutDescScroll>().Refresh();
+
+        if (!activeMenu)
+        {
+            poseMenu.SetActive(false);
+        }
+    }
+
+    public void SavePoseDesc(GameObject Source)
+    {
+        desc.PoseDescriptions.RemoveAt(int.Parse(SelectedPose));
+        desc.PoseDescriptions.Insert(int.Parse(SelectedPose), Source.GetComponent<TMP_InputField>().text);
         saveDescriptionsJSON();
     }
 

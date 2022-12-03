@@ -11,6 +11,7 @@ TagManager:
   - FrameOrder
   - AudioImports
   - AudioRecord
+  - PoseDescCutout
   layers:
   - Default
   - TransparentFX

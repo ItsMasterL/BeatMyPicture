@@ -4,19 +4,21 @@ using UnityEngine;
 using System.IO;
 using TMPro;
 
-public class ReadFiles : MonoBehaviour
+public class ReadStages : MonoBehaviour
 {
     public GameObject NewButton;
     public GameObject button;
     public GameObject canvas;
     GameObject latestButton;
     public string[] dir;
+    public GameObject scrollbar;
 
     public bool delete;
 
     private void Start()
     {
         Read();
+        scrollbar.GetComponent<TemplateSelectScroll>().Refresh();
     }
 
     public void Read()
@@ -28,7 +30,7 @@ public class ReadFiles : MonoBehaviour
             Destroy(i);
         }
 
-        dir = Directory.GetDirectories(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar);
+        dir = Directory.GetDirectories(Application.persistentDataPath + Path.DirectorySeparatorChar + "Stages" + Path.DirectorySeparatorChar);
 
         foreach (string directory in dir)
         {

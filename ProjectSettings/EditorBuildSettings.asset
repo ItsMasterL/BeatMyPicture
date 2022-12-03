@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/TempCreate.unity
     guid: 5faedf23a8abea54bb3e5c26f0fced8e
+  - enabled: 1
+    path: Assets/Scenes/StageCreate.unity
+    guid: c851169fa34908642ba4dd6ba42d6c0e
   m_configObjects: {}

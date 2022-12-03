@@ -22,6 +22,7 @@ public class CamScript : MonoBehaviour
     private void Start()
     {
         Initialize();
+        Debug.Log(Screen.orientation);
     }
 
     private void Initialize()
@@ -70,17 +71,31 @@ public class CamScript : MonoBehaviour
     {
         if (!camAvailable)
             return;
+        if (Screen.orientation == ScreenOrientation.Portrait)
+        {
+            float ratio = (float)Cam.width / (float)Cam.height;
+            fit.aspectRatio = ratio;
 
-        float ratio = (float)Cam.width / (float)Cam.height;
-        fit.aspectRatio = ratio;
+            float scaleY = Cam.videoVerticallyMirrored ? -1f : 1f;
+            background.rectTransform.localScale = new Vector3(1f * ratio, scaleY * ratio, 1f * ratio);
 
-        float scaleY = Cam.videoVerticallyMirrored ? -1f: 1f;
-        background.rectTransform.localScale = new Vector3(1f * ratio, scaleY * ratio, 1f * ratio);
+            int orient = -Cam.videoRotationAngle;
+            background.rectTransform.localEulerAngles = new Vector3(0, 0, orient);
 
-        int orient = -Cam.videoRotationAngle;
-        background.rectTransform.localEulerAngles = new Vector3(0, 0, orient);
+            background.rectTransform.localPosition = new Vector3(0, offset, 0);
+        } else
+        {
+            float ratio = (float)Cam.width / (float)Cam.height;
+            fit.aspectRatio = ratio;
 
-        background.rectTransform.localPosition = new Vector3(0, offset, 0);
+            float scaleX = Cam.videoVerticallyMirrored ? -1f : 1f;
+            background.rectTransform.localScale = new Vector3(1f * ratio, scaleX * ratio, 1f * ratio);
+
+            int orient = -Cam.videoRotationAngle;
+            background.rectTransform.localEulerAngles = new Vector3(0, 0, orient);
+
+            background.rectTransform.localPosition = new Vector3(0, offset, 0);
+        }
 
     }
 

@@ -7,7 +7,7 @@ public class DeleteButton : MonoBehaviour
 {
     public void DeletePress()
     {
-        if (GameObject.Find("Template").GetComponent<ReadFiles>().delete)
+        if (GameObject.Find("Template").GetComponent<ReadTemplates>().delete)
         {
             GetComponent<Image>().color = Color.red;
         } else

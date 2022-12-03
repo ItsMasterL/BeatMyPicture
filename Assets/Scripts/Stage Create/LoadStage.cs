@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
-public class LoadTemplate : MonoBehaviour
+public class LoadStage : MonoBehaviour
 {
-    ReadFiles read;
+    ReadStages read;
     public string FilePath;
+    public float yPos;
 
     private void Start()
     {
-        read = GameObject.Find("Template").GetComponent<ReadFiles>();
+        yPos = transform.localPosition.y;
+        read = GameObject.Find("Stage").GetComponent<ReadStages>();
     }
 
     public void ClickLogic()
@@ -18,7 +20,8 @@ public class LoadTemplate : MonoBehaviour
         if (read.delete)
         {
             DeleteTemplate();
-        } else
+        }
+        else
         {
             GetComponent<OpenTemplate>().Open();
         }

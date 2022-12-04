@@ -15,6 +15,7 @@ public class CamScript : MonoBehaviour
     public bool switchCam;
 
     public float offset = 138;
+    public float zoom = 0;
     public TextMeshProUGUI display;
     public List<GameObject> ConfirmDisable;
     public List<GameObject> ConfirmEnable;
@@ -77,7 +78,7 @@ public class CamScript : MonoBehaviour
             fit.aspectRatio = ratio;
 
             float scaleY = Cam.videoVerticallyMirrored ? -1f : 1f;
-            background.rectTransform.localScale = new Vector3(1f * ratio, scaleY * ratio, 1f * ratio);
+            background.rectTransform.localScale = new Vector3(1f * ratio + zoom, scaleY * ratio + zoom, 1f * ratio + zoom);
 
             int orient = -Cam.videoRotationAngle;
             background.rectTransform.localEulerAngles = new Vector3(0, 0, orient);
@@ -89,7 +90,7 @@ public class CamScript : MonoBehaviour
             fit.aspectRatio = ratio;
 
             float scaleX = Cam.videoVerticallyMirrored ? -1f : 1f;
-            background.rectTransform.localScale = new Vector3(1f * ratio, scaleX * ratio, 1f * ratio);
+            background.rectTransform.localScale = new Vector3(1f * ratio + zoom, scaleX * ratio + zoom, 1f * ratio + zoom);
 
             int orient = -Cam.videoRotationAngle;
             background.rectTransform.localEulerAngles = new Vector3(0, 0, orient);
@@ -148,5 +149,10 @@ public class CamScript : MonoBehaviour
     public void UpdateOffset(Slider input)
     {
         offset = input.value;
+    }
+
+    public void UpdateZoom(Slider input)
+    {
+        zoom = input.value / 100;
     }
 }

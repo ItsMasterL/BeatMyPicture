@@ -30,4 +30,20 @@ public class NameCheck : MonoBehaviour
             }
         }
     }
+    public void checkStages(GameObject obj)
+    {
+        string input = obj.GetComponent<TMP_InputField>().text;
+        string[] dir = Directory.GetDirectories(Application.persistentDataPath + Path.DirectorySeparatorChar + "Stages" + Path.DirectorySeparatorChar);
+
+        okay = true;
+        text.text = "";
+        foreach (string directory in dir)
+        {
+            if (directory.ToLower() == (Application.persistentDataPath + Path.DirectorySeparatorChar + "Stages" + Path.DirectorySeparatorChar + input).ToLower())
+            {
+                okay = false;
+                text.text = "Name already in use!";
+            }
+        }
+    }
 }

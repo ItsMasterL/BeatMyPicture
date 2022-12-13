@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.IO;
 
 public class CamScript : MonoBehaviour
 {
@@ -19,6 +20,8 @@ public class CamScript : MonoBehaviour
     public TextMeshProUGUI display;
     public List<GameObject> ConfirmDisable;
     public List<GameObject> ConfirmEnable;
+
+    public List<GameObject> DisableForPicture;
 
     private void Start()
     {
@@ -136,6 +139,28 @@ public class CamScript : MonoBehaviour
 
     public void Keep()
     {
+        foreach (GameObject obj in ConfirmDisable)
+        {
+            obj.SetActive(true);
+        }
+        foreach (GameObject obj in ConfirmEnable)
+        {
+            obj.SetActive(false);
+        }
+    }
+
+    public void KeepStage(string input)
+    {
+        foreach (GameObject obj in DisableForPicture)
+        {
+            obj.SetActive(false);
+        }
+        ScreenCapture.CaptureScreenshot(OpenStage.carryover + Path.DirectorySeparatorChar + input + ".png");
+        foreach (GameObject obj in DisableForPicture)
+        {
+            obj.SetActive(true);
+        }
+
         foreach (GameObject obj in ConfirmDisable)
         {
             obj.SetActive(true);

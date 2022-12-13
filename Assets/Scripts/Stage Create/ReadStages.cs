@@ -39,7 +39,7 @@ public class ReadStages : MonoBehaviour
             iButton.transform.localPosition = new Vector3(iButton.transform.localPosition.x, iButton.transform.localPosition.y - 120, iButton.transform.localPosition.z);
             latestButton = iButton;
             iButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Path.GetFileName(directory);
-            iButton.GetComponent<LoadTemplate>().FilePath = directory;
+            iButton.GetComponent<LoadStage>().FilePath = directory;
         }
     }
 

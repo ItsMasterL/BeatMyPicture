@@ -95,6 +95,13 @@ public class AudioLoader : MonoBehaviour
         }
         
     }
+    
+    public void PlayMusic(int index)
+    {
+        sound.clip = songs[index];
+        sound.Play();
+        
+    }
 
     private IEnumerator ConvertFilesToAudioClip(FileInfo songFile)
     {

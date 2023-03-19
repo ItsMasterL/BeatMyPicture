@@ -5,7 +5,7 @@ using System.IO;
 
 public class StageImportMusic : MonoBehaviour
 {
-    public GameObject audioeditor;
+    public GameObject audioloader;
     public string lastModified;
     public void ImportAudio(string filename)
     {
@@ -14,7 +14,7 @@ public class StageImportMusic : MonoBehaviour
             File.Exists(OpenStage.carryover + Path.DirectorySeparatorChar + filename + ".wav") ||
             File.Exists(OpenStage.carryover + Path.DirectorySeparatorChar + filename + ".ogg"))
         {
-            audioeditor.SetActive(true);
+            audioloader.GetComponent<AudioLoader>().GetSpecificAudioFromFolder(OpenStage.carryover + Path.DirectorySeparatorChar + Path.DirectorySeparatorChar, filename);
             return;
         }
         FileImporter.GetFile("audio");
@@ -24,7 +24,7 @@ public class StageImportMusic : MonoBehaviour
             File.Copy(FileImporter.LastResult, OpenStage.carryover + Path.DirectorySeparatorChar + Path.DirectorySeparatorChar + filename + ".wav");
         if (FileImporter.LastResult.Substring(FileImporter.LastResult.Length - 3) == "ogg")
             File.Copy(FileImporter.LastResult, OpenStage.carryover + Path.DirectorySeparatorChar + Path.DirectorySeparatorChar + filename + ".ogg");
-        audioeditor.SetActive(true);
+        //audioeditor.SetActive(true);
 
         /*if file is too long to use as a sound effect
         if (GameObject.Find("PlaySound").GetComponent<AudioLoader>().IsAudioLengthValid(OpenTemplate.carryover + Path.DirectorySeparatorChar + "Sound" + Path.DirectorySeparatorChar, filename) == false)

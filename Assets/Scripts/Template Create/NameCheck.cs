@@ -21,6 +21,13 @@ public class NameCheck : MonoBehaviour
 
         okay = true;
         text.text = "";
+
+        if (input == "")
+        {
+            okay = false;
+            text.text = "Name cannot be blank!";
+            return;
+        }
         foreach (string directory in dir)
         {
             if (directory.ToLower() == (Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + input).ToLower())
@@ -37,6 +44,13 @@ public class NameCheck : MonoBehaviour
 
         okay = true;
         text.text = "";
+
+        if (input == "")
+        {
+            okay = false;
+            text.text = "Name cannot be blank!";
+            return;
+        }
         foreach (string directory in dir)
         {
             if (directory.ToLower() == (Application.persistentDataPath + Path.DirectorySeparatorChar + "Stages" + Path.DirectorySeparatorChar + input).ToLower())

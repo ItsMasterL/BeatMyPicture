@@ -18262,7 +18262,6 @@ GameObject:
   - component: {fileID: 1053561216}
   - component: {fileID: 1053561215}
   - component: {fileID: 1053561214}
-  - component: {fileID: 1053561213}
   m_Layer: 8
   m_Name: Just for loadin
   m_TagString: Untagged
@@ -18270,23 +18269,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1053561213
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1053561212}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
 --- !u!114 &1053561214
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25726,9 +25708,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 480196353}
-        m_MethodName: LoadAudioButtons
-        m_Mode: 1
+      - m_Target: {fileID: 2113814679}
+        m_MethodName: SetActive
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -25737,9 +25719,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 2113814679}
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 480196353}
+        m_MethodName: LoadAudioButtons
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -35856,9 +35838,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 480196353}
-        m_MethodName: LoadPoses
-        m_Mode: 1
+      - m_Target: {fileID: 2113814679}
+        m_MethodName: SetActive
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -35867,9 +35849,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 2113814679}
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 480196353}
+        m_MethodName: LoadPoses
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

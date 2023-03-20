@@ -9,6 +9,7 @@ public class AudioLoader : MonoBehaviour
     private List<AudioClip> songs;
     private AudioSource sound;
     float temptimer;
+    public float lastImportLength;
 
     public void Awake()
     {
@@ -38,6 +39,7 @@ public class AudioLoader : MonoBehaviour
         foreach (FileInfo songFile in songFiles)
         {
             Debug.Log(songFile.Length);
+            lastImportLength = songFile.Length;
             StartCoroutine(ConvertFilesToAudioClip(songFile));
         }
 
@@ -98,9 +100,30 @@ public class AudioLoader : MonoBehaviour
     
     public void PlayMusic(int index)
     {
-        sound.clip = songs[index];
-        sound.Play();
+        if (songs.Count == 1)
+        {
+            sound.clip = songs[index];
+            sound.Play();
+        } else
+        {
+            GameObject.Find("Stage Menu").GetComponent<StageImportMusic>().LoadAudio("daymusic");
+            GameObject.Find("AudioSeeker").GetComponent<AudioSeek>().SetMaxLength(lastImportLength);
+        }
         
+    }
+
+    public void PlayPause(int index)
+    {
+        if (!GetComponent<AudioSource>().isPlaying && songs.Count == 1)
+        {
+            sound.clip = songs[index];
+            sound.time = GameObject.Find("AudioSeeker").GetComponent<AudioSeek>().slider.value;
+            sound.Play();
+        }
+        if (GetComponent<AudioSource>().isPlaying && songs.Count == 1)
+        {
+            sound.Pause();
+        }
     }
 
     private IEnumerator ConvertFilesToAudioClip(FileInfo songFile)
@@ -134,6 +157,11 @@ public class AudioLoader : MonoBehaviour
     }
 
     private void OnDisable()
+    {
+        ClearSound();
+    }
+
+    public void ClearSound()
     {
         sound.Stop();
         sound.clip = null;

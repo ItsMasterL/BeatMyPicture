@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 using System.IO;
 
 public class AudioLoader : MonoBehaviour
@@ -11,9 +13,44 @@ public class AudioLoader : MonoBehaviour
     float temptimer;
     public float lastImportLength;
 
+    public GameObject slider;
+    public GameObject startpos;
+    public GameObject looppos;
+    public GameObject endpos;
+
+    public GameObject songpos;
+
     public void Awake()
     {
         sound = GetComponent<AudioSource>();
+    }
+
+    private void Update()
+    {
+        if (songpos != null)
+        {
+            if (sound.isPlaying)
+            {
+                songpos.GetComponent<TextMeshProUGUI>().text = "Current Pos: " + sound.time.ToString("0.000") + "s";
+            }
+            else
+            {
+                songpos.GetComponent<TextMeshProUGUI>().text = "Current Pos: " + slider.GetComponent<Slider>().value.ToString("0.000") + "s";
+            }
+        }
+        //if (startpos != null && looppos != null && endpos != null) //Makes sure songs dont play forever or something. Fix before release
+        //{
+        //    if (endpos.GetComponent<TextMeshProUGUI>().text != "" && startpos.GetComponent<TextMeshProUGUI>().text != "" &&
+        //        float.Parse(endpos.GetComponent<TextMeshProUGUI>().text) <= float.Parse(startpos.GetComponent<TextMeshProUGUI>().text))
+        //    {
+        //        endpos.GetComponent<TMP_InputField>().text = sound.clip.length.ToString();
+        //    }
+        //    if (endpos.GetComponent<TextMeshProUGUI>().text != "" && looppos.GetComponent<TextMeshProUGUI>().text != "" &&
+        //        float.Parse(endpos.GetComponent<TextMeshProUGUI>().text) <= float.Parse(looppos.GetComponent<TextMeshProUGUI>().text))
+        //    {
+        //        looppos.GetComponent<TMP_InputField>().text = "0";
+        //    }
+        //}
     }
 
     public void GetAllAudioFromFolder(string filepath)
@@ -41,6 +78,22 @@ public class AudioLoader : MonoBehaviour
             Debug.Log(songFile.Length);
             lastImportLength = songFile.Length;
             StartCoroutine(ConvertFilesToAudioClip(songFile));
+        }
+
+    }
+
+    public void GetSpecificSongFromFolder(string filepath, string ID)
+    {
+        songs.Clear();
+        DirectoryInfo directoryInfo = new DirectoryInfo(filepath);
+        FileInfo[] songFiles = directoryInfo.GetFiles(ID + ".*");
+
+
+        foreach (FileInfo songFile in songFiles)
+        {
+            Debug.Log(songFile.Length);
+            lastImportLength = songFile.Length;
+            StartCoroutine(ConvertFilesToMusicClip(songFile));
         }
 
     }
@@ -106,8 +159,12 @@ public class AudioLoader : MonoBehaviour
             sound.Play();
         } else
         {
-            GameObject.Find("Stage Menu").GetComponent<StageImportMusic>().LoadAudio("daymusic");
-            GameObject.Find("AudioSeeker").GetComponent<AudioSeek>().SetMaxLength(lastImportLength);
+            if (StageImportMusic.timeEdit == 1)
+                LoadSong("duskmusic");
+            else if (StageImportMusic.timeEdit == 2)
+                LoadSong("nightmusic");
+            else
+                LoadSong("daymusic");
         }
         
     }
@@ -117,13 +174,47 @@ public class AudioLoader : MonoBehaviour
         if (!GetComponent<AudioSource>().isPlaying && songs.Count == 1)
         {
             sound.clip = songs[index];
-            sound.time = GameObject.Find("AudioSeeker").GetComponent<AudioSeek>().slider.value;
+            if (slider.GetComponent<Slider>().maxValue != sound.clip.length)
+            {
+                slider.GetComponent<AudioSeek>().SetMaxLength(sound.clip.length);
+                startpos.GetComponent<TMP_InputField>().text = "0";
+                looppos.GetComponent<TMP_InputField>().text = "0";
+                endpos.GetComponent<TMP_InputField>().text = sound.clip.length.ToString();
+            }
+            sound.time = slider.GetComponent<AudioSeek>().slider.value;
             sound.Play();
+            return;
         }
         if (GetComponent<AudioSource>().isPlaying && songs.Count == 1)
         {
             sound.Pause();
+            return;
         }
+        if (songs.Count != 1)
+        {
+            if (StageImportMusic.timeEdit == 1)
+                LoadSong("duskmusic");
+            else if (StageImportMusic.timeEdit == 2)
+                LoadSong("nightmusic");
+            else
+                LoadSong("daymusic");
+        }
+    }
+
+    public void LoadSong(string filename)
+    {
+        GameObject.Find("Stage Menu").GetComponent<StageImportMusic>().LoadAudio(filename);
+    }
+
+    public void LoadProperties()
+    {
+        slider.GetComponent<AudioSeek>().SetMaxLength(sound.clip.length);
+        if (startpos.GetComponent<TMP_InputField>().text == "")
+        startpos.GetComponent<TMP_InputField>().text = "0";
+        if (looppos.GetComponent<TMP_InputField>().text == "")
+        looppos.GetComponent<TMP_InputField>().text = "0";
+        if (endpos.GetComponent<TMP_InputField>().text == "")
+        endpos.GetComponent<TMP_InputField>().text = sound.clip.length.ToString();
     }
 
     private IEnumerator ConvertFilesToAudioClip(FileInfo songFile)
@@ -140,12 +231,10 @@ public class AudioLoader : MonoBehaviour
         }
     }
 
-    private IEnumerator ConvertFilesToAudioClipCheck(FileInfo songFile)
+    private IEnumerator ConvertFilesToMusicClip(FileInfo songFile)
     {
         if (songFile.Name.Contains("meta"))
-        {
             yield break;
-        }
         else
         {
             string songName = songFile.FullName.ToString();
@@ -153,6 +242,8 @@ public class AudioLoader : MonoBehaviour
             WWW www = new WWW(url);
             yield return www;
             songs.Add(www.GetAudioClip(false, false));
+            LoadProperties();
+
         }
     }
 

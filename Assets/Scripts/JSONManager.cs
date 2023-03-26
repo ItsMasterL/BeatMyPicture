@@ -7,6 +7,7 @@ using TMPro;
 
 public class JSONManager : MonoBehaviour
 {
+    #region All game objects for templates
     public GameObject NewButton;
     public GameObject NewBg;
     public GameObject button;
@@ -61,6 +62,8 @@ public class JSONManager : MonoBehaviour
     [Space(10)]
     public GameObject poseMenu;
     public string SelectedPose;
+
+    #endregion
 
     #region All the game objects to read data from for frames
     [Space(10)]
@@ -288,7 +291,7 @@ public class JSONManager : MonoBehaviour
             string jsonstuff = File.ReadAllText(path + Path.DirectorySeparatorChar + "Frames" + Path.DirectorySeparatorChar + ID + ".json");
             frame = JsonUtility.FromJson<Frame>(jsonstuff);
 
-            if (frame.Version == "0.0.1")
+            if (frame.Version == "0.0.1") //diff versions will load differently to ensure compatability with all future updates
             {
                 frameimageid.GetComponent<TMP_InputField>().text = frame.image;
                 frametime.GetComponent<TMP_InputField>().text = frame.seconds.ToString();

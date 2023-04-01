@@ -155,7 +155,10 @@ public class CamScript : MonoBehaviour
         {
             obj.SetActive(false);
         }
-        ScreenCapture.CaptureScreenshot(OpenStage.carryover + Path.DirectorySeparatorChar + input + ".png");
+        if (Application.platform == RuntimePlatform.WindowsEditor)
+            ScreenCapture.CaptureScreenshot(OpenStage.carryover + Path.DirectorySeparatorChar + input + ".png");
+        else
+            ScreenCapture.CaptureScreenshot(OpenStage.shortcarryover + Path.DirectorySeparatorChar + input + ".png");
         foreach (GameObject obj in DisableForPicture)
         {
             obj.SetActive(true);

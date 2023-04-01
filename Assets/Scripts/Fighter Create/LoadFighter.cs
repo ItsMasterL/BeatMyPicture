@@ -3,31 +3,31 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
-public class LoadStage : MonoBehaviour
+public class LoadFighter : MonoBehaviour
 {
-    ReadStages read;
+    ReadFighters read;
     public string FilePath;
     public float yPos;
 
     private void Start()
     {
         yPos = transform.localPosition.y;
-        read = GameObject.Find("Stage").GetComponent<ReadStages>();
+        read = GameObject.Find("Fighter").GetComponent<ReadFighters>();
     }
 
     public void ClickLogic()
     {
         if (read.delete)
         {
-            DeleteStage();
+            DeleteFighter();
         }
         else
         {
-            GetComponent<OpenStage>().Open();
+            GetComponent<OpenFighter>().Open();
         }
     }
 
-    public void DeleteStage()
+    public void DeleteFighter()
     {
         Directory.Delete(FilePath, true);
         read.Read();

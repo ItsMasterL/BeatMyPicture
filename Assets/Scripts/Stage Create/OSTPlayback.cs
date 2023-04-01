@@ -75,6 +75,8 @@ public class OSTPlayback : MonoBehaviour
 
     public void SongChange(bool add)
     {
+        if (sound.isPlaying)
+            sound.Stop();
         if (add && songChoice < 3)
         {
             songChoice++;

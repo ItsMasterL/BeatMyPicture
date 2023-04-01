@@ -13,6 +13,7 @@ public class LoadTemplate : MonoBehaviour
     {
         yPos = transform.localPosition.y;
         read = GameObject.Find("Template").GetComponent<ReadTemplates>();
+        OpenFighter.templateselected = "";
     }
 
     public void ClickLogic()
@@ -24,6 +25,11 @@ public class LoadTemplate : MonoBehaviour
         {
             GetComponent<OpenTemplate>().Open();
         }
+    }
+
+    public void SelectTemplateForFighter()
+    {
+        OpenFighter.templateselected = FilePath;
     }
 
     public void DeleteTemplate()

@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Title.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
-    path: Assets/Scenes/CharCreate.unity
+    path: Assets/Scenes/FighterCreate.unity
     guid: c999108b54dedfe43baf83224ecde7cf
   - enabled: 1
     path: Assets/Scenes/CreatorMenu.unity

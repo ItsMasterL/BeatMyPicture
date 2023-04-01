@@ -60,4 +60,28 @@ public class NameCheck : MonoBehaviour
             }
         }
     }
+    
+    public void checkFighters(GameObject obj)
+    {
+        string input = obj.GetComponent<TMP_InputField>().text;
+        string[] dir = Directory.GetDirectories(Application.persistentDataPath + Path.DirectorySeparatorChar + "Fighters" + Path.DirectorySeparatorChar);
+
+        okay = true;
+        text.text = "";
+
+        if (input == "")
+        {
+            okay = false;
+            text.text = "Name cannot be blank!";
+            return;
+        }
+        foreach (string directory in dir)
+        {
+            if (directory.ToLower() == (Application.persistentDataPath + Path.DirectorySeparatorChar + "Fighters" + Path.DirectorySeparatorChar + input).ToLower())
+            {
+                okay = false;
+                text.text = "Name already in use!";
+            }
+        }
+    }
 }

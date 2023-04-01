@@ -5,24 +5,25 @@ using System.IO;
 using TMPro;
 using UnityEngine.SceneManagement;
 
-public class OpenStage : MonoBehaviour
+public class OpenFighter : MonoBehaviour
 {
     public GameObject check;
     public static string carryover;
     public static string shortcarryover;
+    public static string templateselected;
     public static bool newtemplate;
 
     public void Create(GameObject obj)
     {
         string input = obj.GetComponent<TMP_InputField>().text;
-        if (check.GetComponent<NameCheck>().okay == true)
+        if (check.GetComponent<NameCheck>().okay == true && templateselected != "")
         {
-            Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Stages" + Path.DirectorySeparatorChar + input);
-            carryover = Application.persistentDataPath + Path.DirectorySeparatorChar + "Stages" + Path.DirectorySeparatorChar + input;
-            shortcarryover = "Stages" + Path.DirectorySeparatorChar + input;
+            Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Fighters" + Path.DirectorySeparatorChar + input);
+            carryover = Application.persistentDataPath + Path.DirectorySeparatorChar + "Fighters" + Path.DirectorySeparatorChar + input;
+            shortcarryover = "Fighters" + Path.DirectorySeparatorChar + input;
             newtemplate = true;
             Screen.orientation = ScreenOrientation.Landscape;
-            SceneManager.LoadScene("StageCreate");
+            SceneManager.LoadScene("FighterCreate");
         }
     }
 
@@ -38,6 +39,6 @@ public class OpenStage : MonoBehaviour
         }*/
         newtemplate = false;
         Screen.orientation = ScreenOrientation.Landscape;
-        SceneManager.LoadScene("StageCreate");
+        SceneManager.LoadScene("FighterCreate");
     }
 }

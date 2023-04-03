@@ -160,6 +160,7 @@ public class JSONManager : MonoBehaviour
     [System.Serializable]
     public class AudioAndDescriptions
     {
+        public string Version = "0.0.1";
         public List<int> SoundIDs;
         public List<string> IncludedSounds;
         public List<string> PoseDescriptions;

@@ -23,6 +23,7 @@ public class OpenFighter : MonoBehaviour
             shortcarryover = "Fighters" + Path.DirectorySeparatorChar + input;
             newtemplate = true;
             Screen.orientation = ScreenOrientation.Landscape;
+            Debug.Log("Template is " + templateselected);
             SceneManager.LoadScene("FighterCreate");
         }
     }

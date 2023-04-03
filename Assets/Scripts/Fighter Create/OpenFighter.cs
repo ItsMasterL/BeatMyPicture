@@ -24,7 +24,6 @@ public class OpenFighter : MonoBehaviour
             newtemplate = true;
             Screen.orientation = ScreenOrientation.Landscape;
             Debug.Log("Template is " + templateselected);
-            SceneManager.LoadScene("FighterCreate");
         }
     }
 

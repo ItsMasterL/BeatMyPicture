@@ -24,7 +24,7 @@ public class OpenFighter : MonoBehaviour
             carryover = Application.persistentDataPath + Path.DirectorySeparatorChar + "Fighters" + Path.DirectorySeparatorChar + input;
             shortcarryover = "Fighters" + Path.DirectorySeparatorChar + input;
             newfighter = true;
-            Screen.orientation = ScreenOrientation.Landscape;
+            Screen.orientation = ScreenOrientation.Portrait;
             Debug.Log("Template is " + templateselected);
             SceneManager.LoadScene("FighterCreate");
         }
@@ -46,7 +46,7 @@ public class OpenFighter : MonoBehaviour
             Debug.Log("Created missing Sounds folder");
         }
         newfighter = false;
-        Screen.orientation = ScreenOrientation.Landscape;
+        Screen.orientation = ScreenOrientation.Portrait;
         SceneManager.LoadScene("FighterCreate");
     }
 }

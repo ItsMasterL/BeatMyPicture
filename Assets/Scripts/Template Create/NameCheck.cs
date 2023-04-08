@@ -75,6 +75,12 @@ public class NameCheck : MonoBehaviour
             text.text = "Name cannot be blank!";
             return;
         }
+        if (OpenFighter.templateselected == "" || OpenFighter.templateselected == null)
+        {
+            okay = false;
+            text.text = "You must select a template!";
+            return;
+        }
         foreach (string directory in dir)
         {
             if (directory.ToLower() == (Application.persistentDataPath + Path.DirectorySeparatorChar + "Fighters" + Path.DirectorySeparatorChar + input).ToLower())

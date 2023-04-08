@@ -11,19 +11,22 @@ public class OpenFighter : MonoBehaviour
     public static string carryover;
     public static string shortcarryover;
     public static string templateselected;
-    public static bool newtemplate;
+    public static bool newfighter;
 
     public void Create(GameObject obj)
     {
         string input = obj.GetComponent<TMP_InputField>().text;
-        if (check.GetComponent<NameCheck>().okay == true && templateselected != "")
+        if (check.GetComponent<NameCheck>().okay == true)
         {
             Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Fighters" + Path.DirectorySeparatorChar + input);
+            Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Fighters" + Path.DirectorySeparatorChar + input + Path.DirectorySeparatorChar + "Pictures");
+            Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Fighters" + Path.DirectorySeparatorChar + input + Path.DirectorySeparatorChar + "Sounds");
             carryover = Application.persistentDataPath + Path.DirectorySeparatorChar + "Fighters" + Path.DirectorySeparatorChar + input;
             shortcarryover = "Fighters" + Path.DirectorySeparatorChar + input;
-            newtemplate = true;
+            newfighter = true;
             Screen.orientation = ScreenOrientation.Landscape;
             Debug.Log("Template is " + templateselected);
+            SceneManager.LoadScene("FighterCreate");
         }
     }
 
@@ -32,12 +35,17 @@ public class OpenFighter : MonoBehaviour
         carryover = gameObject.GetComponent<LoadStage>().FilePath;
         int removal = Application.persistentDataPath.ToCharArray().Length + 1;
         shortcarryover = carryover.Remove(0, removal);
-        /*if (!Directory.Exists(carryover + Path.DirectorySeparatorChar + "Cutouts"))
+        if (!Directory.Exists(carryover + Path.DirectorySeparatorChar + "Pictures"))
         {
-            Directory.CreateDirectory(carryover + Path.DirectorySeparatorChar + "Cutouts");
-            Debug.Log("Created missing Cutouts folder");
-        }*/
-        newtemplate = false;
+            Directory.CreateDirectory(carryover + Path.DirectorySeparatorChar + "Pictures");
+            Debug.Log("Created missing Pictures folder");
+        }
+        if (!Directory.Exists(carryover + Path.DirectorySeparatorChar + "Sounds"))
+        {
+            Directory.CreateDirectory(carryover + Path.DirectorySeparatorChar + "Sounds");
+            Debug.Log("Created missing Sounds folder");
+        }
+        newfighter = false;
         Screen.orientation = ScreenOrientation.Landscape;
         SceneManager.LoadScene("FighterCreate");
     }

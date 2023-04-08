@@ -23,13 +23,17 @@ public class CamScript : MonoBehaviour
 
     public List<GameObject> DisableForPicture;
 
+    public GameObject prepScreen;
+    public GameObject picScreen;
+    public GameObject colorFilter;
+
     private void Start()
     {
         Initialize();
         Debug.Log(Screen.orientation);
     }
 
-    private void Initialize()
+    public void Initialize()
     {
         defaultBg = background.texture;
         WebCamDevice[] devices = WebCamTexture.devices;
@@ -147,6 +151,79 @@ public class CamScript : MonoBehaviour
         {
             obj.SetActive(false);
         }
+    }
+
+    public void KeepFighter(GameObject transform)
+    {
+        foreach (GameObject obj in DisableForPicture)
+        {
+            obj.SetActive(false);
+        }
+
+        StartCoroutine(ProcessAndSaveFighterImage(transform));
+    }
+
+    private IEnumerator ProcessAndSaveFighterImage(GameObject transform)
+    {
+        yield return new WaitForEndOfFrame();
+
+        Vector3[] points = new Vector3[4];
+        Vector3[] screenspace = new Vector3[4];
+
+        transform.GetComponent<RectTransform>().GetWorldCorners(points);
+
+        int i = 0;
+
+        foreach (Vector3 point in points)
+        {
+            screenspace[i] = Camera.main.WorldToScreenPoint(point);
+            i++;
+        }
+        //point 2 is top right, point 0 is bottom left
+
+        Texture2D tex = new Texture2D((int)screenspace[2].x - (int)screenspace[0].x, (int)screenspace[2].y - (int)screenspace[0].y, TextureFormat.RGB24, false);
+        Rect rect = new Rect(screenspace[0], screenspace[2] - screenspace[0]);
+
+        tex.ReadPixels(rect, 0, 0);
+        //FFBC5D - colortrigger
+        Color colortrigger = colorFilter.GetComponent<Image>().color; // color triggers to change
+        Color colorset = new Color(0, 0, 0, 0); //Empty!
+        for (int y = 0; y < tex.height; y++)
+        {
+            for (int x = 0; x < tex.width; x++)
+            {
+                if (tex.GetPixel(x, y) == colortrigger)
+                {
+                    // Change the pixel to transparent
+                    tex.SetPixel(x, y, colorset);
+                }
+            }
+        }
+        tex.Apply();
+        byte[] texture = tex.EncodeToPNG();
+        Destroy(tex);
+
+        File.WriteAllBytes(OpenFighter.carryover + Path.DirectorySeparatorChar + "Pictures" + Path.DirectorySeparatorChar +
+            GameObject.Find("Main Camera").GetComponent<LoadInfoFromTemplates>().frame.ToString("000") + ".png", texture);
+
+        foreach (GameObject obj in DisableForPicture)
+        {
+            obj.SetActive(true);
+        }
+
+        foreach (GameObject obj in ConfirmDisable)
+        {
+            obj.SetActive(true);
+        }
+        foreach (GameObject obj in ConfirmEnable)
+        {
+            obj.SetActive(false);
+        }
+
+        //go back to loading stuff
+        prepScreen.SetActive(true);
+        picScreen.SetActive(false);
+        gameObject.GetComponent<LoadInfoFromTemplates>().UpFrameandLoad();
     }
 
     public void KeepStage(string input)

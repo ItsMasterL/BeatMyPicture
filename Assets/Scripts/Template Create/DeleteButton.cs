@@ -25,4 +25,14 @@ public class DeleteButton : MonoBehaviour
             GetComponent<Image>().color = Color.white;
         }
     }
+    public void DeleteFighter()
+    {
+        if (GameObject.Find("Fighter").GetComponent<ReadFighters>().delete)
+        {
+            GetComponent<Image>().color = Color.red;
+        } else
+        {
+            GetComponent<Image>().color = Color.white;
+        }
+    }
 }

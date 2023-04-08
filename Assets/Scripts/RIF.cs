@@ -7,6 +7,9 @@ public class RIF : MonoBehaviour
 {
     public void UpdateSize()
     {
+        GetComponent<RectTransform>().offsetMin = new Vector2(0,0);
+        GetComponent<RectTransform>().offsetMax = new Vector2(0,0);
+
         GetComponent<RawImage>().SizeToParent();
     }
 

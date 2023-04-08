@@ -121,8 +121,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3185249252050557774}
-        m_MethodName: Open
+      - m_Target: {fileID: 2134560489690556939}
+        m_MethodName: ClickLogic
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

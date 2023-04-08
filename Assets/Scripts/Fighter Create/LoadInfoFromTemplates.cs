@@ -17,18 +17,46 @@ public class LoadInfoFromTemplates : MonoBehaviour
     #region info screen items
     [Space(15)]
     public TextMeshProUGUI poseCount;
+    public TextMeshProUGUI pictureDesc;
     #endregion
 
+    public int frame;
+    public int limit;
+
+    public GameObject soundPage;
+    public GameObject endPage;
+    public GameObject prepPage;
+
+    public JSONManager.AudioAndDescriptions set;
 
     private void Awake()
     {
+        limit = Directory.GetFiles(OpenFighter.templateselected + Path.DirectorySeparatorChar + "Cutouts" + Path.DirectorySeparatorChar).Length;
         if (File.Exists(OpenFighter.templateselected + Path.DirectorySeparatorChar + "properties.json"))
         {
             string json = File.ReadAllText(OpenFighter.templateselected + Path.DirectorySeparatorChar + "properties.json");
-            JSONManager.AudioAndDescriptions set = JsonUtility.FromJson<JSONManager.AudioAndDescriptions>(json);
+            set = JsonUtility.FromJson<JSONManager.AudioAndDescriptions>(json);
 
-            poseCount.text = "This template has " + Directory.GetFiles(OpenFighter.templateselected + Path.DirectorySeparatorChar + "Cutouts" + Path.DirectorySeparatorChar).Length
-                + " poses for you to take pictures of and " + set.SoundIDs.Count.ToString() + " sounds for you to record.";
+            poseCount.text = "This template has " + limit + " poses for you to take pictures of and " + set.SoundIDs.Count.ToString() + " sounds for you to record.";
+        }
+        frame = 0;
+    }
+
+    public void UpFrameandLoad()
+    {
+        if (frame < limit - 1)
+        {
+            frame++;
+            LoadPreview(frame);
+        }
+        else if (set.SoundIDs.Count > 0)
+        {
+            prepPage.SetActive(false);
+            soundPage.SetActive(true);
+        } else
+        {
+            prepPage.SetActive(false);
+            endPage.SetActive(true);
         }
     }
 
@@ -36,12 +64,14 @@ public class LoadInfoFromTemplates : MonoBehaviour
     {
         poseIDDisplay.text = "POSE " + index.ToString("000");
         descDisplay.text = "(No description given... use your imaginationnnnn?)";
+        pictureDesc.text = "[Missing Description]";
         if (File.Exists(OpenFighter.templateselected + Path.DirectorySeparatorChar + "properties.json"))
         {
             string json = File.ReadAllText(OpenFighter.templateselected + Path.DirectorySeparatorChar + "properties.json");
             JSONManager.AudioAndDescriptions set = JsonUtility.FromJson<JSONManager.AudioAndDescriptions>(json);
 
             descDisplay.text = set.PoseDescriptions[index];
+            pictureDesc.text = descDisplay.text;
         }
 
         //Loading image - FIGURE OUT COUROTINES GOSH DARN IT

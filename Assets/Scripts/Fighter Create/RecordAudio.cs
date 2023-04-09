@@ -75,6 +75,7 @@ public class RecordAudio : MonoBehaviour
                 SavWav.Save(OpenFighter.carryover + Path.DirectorySeparatorChar + "Sounds" + Path.DirectorySeparatorChar + currentSound.ToString() + ".wav", rec);
                 source.clip = rec;
                 source.Play();
+                countDisp.gameObject.SetActive(false);
                 foreach (GameObject obj in hidewhilerecord)
                 {
                     obj.SetActive(true);
@@ -86,6 +87,8 @@ public class RecordAudio : MonoBehaviour
 
     public void Setup()
     {
+        source.Stop();
+        source.time = 0;
         if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
         {
             Permission.RequestUserPermission(Permission.Microphone);
@@ -99,7 +102,13 @@ public class RecordAudio : MonoBehaviour
 
         countdown = 3f;
         duration = 0f;
+        countDisp.gameObject.SetActive(true);
         isRecording = true;
+    }
+
+    public void Load(int index)
+    {
+        GetComponent<AudioLoader>().GetSpecificAudioFromFolder(OpenFighter.carryover + Path.DirectorySeparatorChar + "Sounds" + Path.DirectorySeparatorChar, currentSound.ToString());
     }
 
     public void Replay()
@@ -124,5 +133,4 @@ public class RecordAudio : MonoBehaviour
             gameObject.SetActive(false);
         }
     }
-
 }

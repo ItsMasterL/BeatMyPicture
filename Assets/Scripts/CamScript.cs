@@ -185,6 +185,7 @@ public class CamScript : MonoBehaviour
         Rect rect = new Rect(screenspace[0], screenspace[2] - screenspace[0]);
 
         tex.ReadPixels(rect, 0, 0);
+        tex.Apply();
         //FFBC5D - colortrigger
         Color colortrigger = colorFilter.GetComponent<Image>().color; // color triggers to change
         Color colorset = new Color(0, 0, 0, 0); //Empty!

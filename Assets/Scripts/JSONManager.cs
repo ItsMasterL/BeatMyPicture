@@ -100,6 +100,8 @@ public class JSONManager : MonoBehaviour
     public GameObject jump;
     public GameObject super;
     public GameObject exact;
+    public GameObject landing;
+    public GameObject hurt;
     public GameObject[] frameorder;
     #endregion
 
@@ -152,6 +154,8 @@ public class JSONManager : MonoBehaviour
         public bool special;
         public bool taunt;
         public bool jump;
+        public bool landing;
+        public bool hurt;
         public bool superspecial; //Only available when under 25% health
         public bool exactInput; //for example, can you taunt while holding an input or does it have to be neutral taunt
         public bool isPlaying; //Not in editor
@@ -160,6 +164,7 @@ public class JSONManager : MonoBehaviour
     [System.Serializable]
     public class AudioAndDescriptions
     {
+        public string UUID = "";
         public string Version = "0.0.1";
         public List<int> SoundIDs;
         public List<string> IncludedSounds;
@@ -342,6 +347,8 @@ public class JSONManager : MonoBehaviour
                 special.GetComponent<Toggle>().isOn = Set.special;
                 taunt.GetComponent<Toggle>().isOn = Set.taunt;
                 jump.GetComponent<Toggle>().isOn = Set.jump;
+                landing.GetComponent<Toggle>().isOn = Set.landing;
+                hurt.GetComponent<Toggle>().isOn = Set.hurt;
                 super.GetComponent<Toggle>().isOn = Set.superspecial;
                 exact.GetComponent<Toggle>().isOn = Set.exactInput;
                 loadFrameInputs();
@@ -452,6 +459,8 @@ public class JSONManager : MonoBehaviour
         Set.special = special.GetComponent<Toggle>().isOn;
         Set.taunt = taunt.GetComponent<Toggle>().isOn;
         Set.jump = jump.GetComponent<Toggle>().isOn;
+        Set.landing = landing.GetComponent<Toggle>().isOn;
+        Set.hurt = hurt.GetComponent<Toggle>().isOn;
         Set.superspecial = super.GetComponent<Toggle>().isOn;
         Set.exactInput = exact.GetComponent<Toggle>().isOn;
 
@@ -512,6 +521,8 @@ public class JSONManager : MonoBehaviour
         special.GetComponent<Toggle>().isOn = false;
         taunt.GetComponent<Toggle>().isOn = false;
         jump.GetComponent<Toggle>().isOn = false;
+        landing.GetComponent<Toggle>().isOn = false;
+        hurt.GetComponent<Toggle>().isOn = false;
         super.GetComponent<Toggle>().isOn = false;
         exact.GetComponent<Toggle>().isOn = false;
 
@@ -531,6 +542,8 @@ public class JSONManager : MonoBehaviour
         Set.special = false;
         Set.taunt = false;
         Set.jump = false;
+        Set.landing = false;
+        Set.hurt = false;
         Set.superspecial = false;
         Set.exactInput = false;
 
@@ -772,6 +785,10 @@ public class JSONManager : MonoBehaviour
 
     public void saveDescriptionsJSON()
     {
+        if (desc.UUID == "")
+        {
+            desc.UUID = System.Guid.NewGuid().ToString();
+        }
         string Output = JsonUtility.ToJson(desc);
         File.WriteAllText(OpenTemplate.carryover + Path.DirectorySeparatorChar + "properties.json", Output);
         LoadAudioButtons();

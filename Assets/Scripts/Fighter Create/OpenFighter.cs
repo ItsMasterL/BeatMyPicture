@@ -21,7 +21,11 @@ public class OpenFighter : MonoBehaviour
             Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Fighters" + Path.DirectorySeparatorChar + input);
             Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Fighters" + Path.DirectorySeparatorChar + input + Path.DirectorySeparatorChar + "Pictures");
             Directory.CreateDirectory(Application.persistentDataPath + Path.DirectorySeparatorChar + "Fighters" + Path.DirectorySeparatorChar + input + Path.DirectorySeparatorChar + "Sounds");
+            string jsoninfo = File.ReadAllText(templateselected + Path.DirectorySeparatorChar + "properties.json");
+            JSONManager.AudioAndDescriptions info = JsonUtility.FromJson<JSONManager.AudioAndDescriptions>(jsoninfo);
+            string UUID = info.UUID;
             carryover = Application.persistentDataPath + Path.DirectorySeparatorChar + "Fighters" + Path.DirectorySeparatorChar + input;
+            File.WriteAllText(carryover + Path.DirectorySeparatorChar + "template.noedit", UUID);
             shortcarryover = "Fighters" + Path.DirectorySeparatorChar + input;
             newfighter = true;
             Screen.orientation = ScreenOrientation.Portrait;
@@ -32,7 +36,7 @@ public class OpenFighter : MonoBehaviour
 
     public void Open()
     {
-        carryover = gameObject.GetComponent<LoadStage>().FilePath;
+        carryover = gameObject.GetComponent<LoadFighter>().FilePath;
         int removal = Application.persistentDataPath.ToCharArray().Length + 1;
         shortcarryover = carryover.Remove(0, removal);
         if (!Directory.Exists(carryover + Path.DirectorySeparatorChar + "Pictures"))
@@ -46,6 +50,25 @@ public class OpenFighter : MonoBehaviour
             Debug.Log("Created missing Sounds folder");
         }
         newfighter = false;
+        string[] dir = Directory.GetDirectories(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates");
+        string key = File.ReadAllText(carryover + Path.DirectorySeparatorChar + "template.noedit");
+        for (int i = 0; i < dir.Length; i++)
+        {
+            string check = File.ReadAllText(dir[i] + Path.DirectorySeparatorChar + "properties.json");
+            JSONManager.AudioAndDescriptions info = JsonUtility.FromJson<JSONManager.AudioAndDescriptions>(check);
+            Debug.Log(info.UUID + " vs " + key);
+            if (info.UUID == key)
+            {
+                templateselected = dir[i];
+                i = dir.Length + 30;
+            }
+        }
+        if (templateselected == null)
+        {
+            Debug.LogError("There was no matching UUID");
+            return;
+        }
+        Debug.Log(templateselected);
         Screen.orientation = ScreenOrientation.Portrait;
         SceneManager.LoadScene("FighterCreate");
     }

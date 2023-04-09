@@ -17,7 +17,7 @@ public class SetupFiles : MonoBehaviour
         public string Username = "";
         public string UUID = "";
         public string Bio = "";
-        public int ColorID = 0;
+        public int ColorID = 10;
         public string version = "0.0.1";
         public string Edittime = "";
     }
@@ -25,7 +25,7 @@ public class SetupFiles : MonoBehaviour
     #endregion
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         Screen.orientation = ScreenOrientation.Landscape;
         path = Application.persistentDataPath;
@@ -54,6 +54,12 @@ public class SetupFiles : MonoBehaviour
                 File.Delete(path + Path.DirectorySeparatorChar + "profile.noedit");
 
                 profileSetup.SetActive(true);
+            } else
+            {
+                foreach (SetColor col in FindObjectsOfType<SetColor>())
+                {
+                    col.UpdateColor();
+                }
             }
         }
     }
@@ -61,6 +67,10 @@ public class SetupFiles : MonoBehaviour
     public void SetFavColor(int Input)
     {
         profile.ColorID = Input;
+        foreach(SetColor col in FindObjectsOfType<SetColor>())
+        {
+            col.UpdateColor();
+        }
     }
 
     public void SetUsername(string Input)

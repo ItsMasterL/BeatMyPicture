@@ -26,20 +26,29 @@ public class LoadInfoFromTemplates : MonoBehaviour
     public GameObject soundPage;
     public GameObject endPage;
     public GameObject prepPage;
+    public GameObject startPage;
+    public GameObject editPage;
 
     public JSONManager.AudioAndDescriptions set;
 
     private void Awake()
     {
-        limit = Directory.GetFiles(OpenFighter.templateselected + Path.DirectorySeparatorChar + "Cutouts" + Path.DirectorySeparatorChar).Length;
-        if (File.Exists(OpenFighter.templateselected + Path.DirectorySeparatorChar + "properties.json"))
+        if (OpenFighter.newfighter)
         {
-            string json = File.ReadAllText(OpenFighter.templateselected + Path.DirectorySeparatorChar + "properties.json");
-            set = JsonUtility.FromJson<JSONManager.AudioAndDescriptions>(json);
+            limit = Directory.GetFiles(OpenFighter.templateselected + Path.DirectorySeparatorChar + "Cutouts" + Path.DirectorySeparatorChar).Length;
+            if (File.Exists(OpenFighter.templateselected + Path.DirectorySeparatorChar + "properties.json"))
+            {
+                string json = File.ReadAllText(OpenFighter.templateselected + Path.DirectorySeparatorChar + "properties.json");
+                set = JsonUtility.FromJson<JSONManager.AudioAndDescriptions>(json);
 
-            poseCount.text = "This template has " + limit + " poses for you to take pictures of and " + set.SoundIDs.Count.ToString() + " sounds for you to record.";
+                poseCount.text = "This template has " + limit + " poses for you to take pictures of and " + set.SoundIDs.Count.ToString() + " sounds for you to record.";
+            }
+            frame = 0;
+        } else
+        {
+            startPage.SetActive(false);
+            editPage.SetActive(true);
         }
-        frame = 0;
     }
 
     public void UpFrameandLoad()

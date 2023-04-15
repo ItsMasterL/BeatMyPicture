@@ -105,6 +105,13 @@ public class JSONManager : MonoBehaviour
     public GameObject[] frameorder;
     #endregion
 
+    #region Game objects for mandatory poses
+    [Space(10)]
+    public TMP_InputField select;
+    public TMP_InputField win;
+    public TMP_InputField lose;
+    #endregion
+
     private void Start()
     {
         loadFrameButton();
@@ -171,6 +178,9 @@ public class JSONManager : MonoBehaviour
         public List<string> PoseDescriptions;
         public List<string> SoundDescriptions;
         public List<float> SoundLimits;
+        public string SelectPose;
+        public string WinPose;
+        public string LosePose;
     }
     
     public AnimSet Set = new AnimSet();
@@ -781,6 +791,27 @@ public class JSONManager : MonoBehaviour
         desc.PoseDescriptions.RemoveAt(int.Parse(SelectedPose));
         desc.PoseDescriptions.Insert(int.Parse(SelectedPose), Source.GetComponent<TMP_InputField>().text);
         saveDescriptionsJSON();
+    }
+
+    public void SaveMandatoryPoses()
+    {
+        desc.SelectPose = select.text;
+        desc.WinPose = win.text;
+        desc.LosePose = lose.text;
+        saveDescriptionsJSON();
+    }
+
+    public void LoadMandatoryPoses()
+    {
+        if (File.Exists(OpenTemplate.carryover + Path.DirectorySeparatorChar + "properties.json"))
+        {
+            string jsonstuff = File.ReadAllText(OpenTemplate.carryover + Path.DirectorySeparatorChar + "properties.json");
+            desc = JsonUtility.FromJson<AudioAndDescriptions>(jsonstuff);
+        }
+
+        select.text = desc.SelectPose;
+        win.text = desc.WinPose;
+        lose.text = desc.LosePose;
     }
 
     public void saveDescriptionsJSON()

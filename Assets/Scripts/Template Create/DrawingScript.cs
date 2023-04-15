@@ -18,6 +18,8 @@ public class DrawingScript : MonoBehaviour
     public GameObject imageLoadPlane;
     GameObject imageLoadCanvas;
     public TextMeshProUGUI displayID;
+    bool fillMode;
+    public GameObject drawingplane;
 
     private void Start()
     {
@@ -30,7 +32,7 @@ public class DrawingScript : MonoBehaviour
     {
         transform.position = cam.ScreenToWorldPoint(Input.mousePosition);
 
-        if (Input.GetMouseButton(0) && drawMenu.activeSelf)
+        if (Input.GetMouseButton(0) && drawMenu.activeSelf && !fillMode)
         {
             //trail.enabled = true;
             transform.position = new Vector3(transform.position.x, transform.position.y, 88); //pen down
@@ -38,6 +40,11 @@ public class DrawingScript : MonoBehaviour
         {
             //trail.enabled = false;
             transform.position = new Vector3(transform.position.x, transform.position.y, 130); //pen up
+        }
+
+        if (Input.GetMouseButtonUp(0) && fillMode)
+        {
+            FloodFillBegin();
         }
 
         if (reset == false && canvas.clearFlags != CameraClearFlags.Nothing)
@@ -61,6 +68,7 @@ public class DrawingScript : MonoBehaviour
     //FF8E00 - orang
     public void Pen(bool drawMode)
     {
+        fillMode = false;
         Material mat = GetComponent<Renderer>().material;
         Color orang = new Color(1, 0.5587921f, 0, 1);
         if (drawMode)
@@ -74,6 +82,57 @@ public class DrawingScript : MonoBehaviour
             //trail.startColor = Color.black;
             //trail.endColor = Color.black;
         }
+    }
+
+    public void FillToggle()
+    {
+        fillMode = !fillMode;
+    }
+
+    void FloodFillBegin()
+    {
+        imageLoadPlane.GetComponent<RawImage>().texture = rt;
+        imageLoadCanvas.gameObject.transform.localPosition = new Vector3(imageLoadCanvas.transform.localPosition.x, imageLoadCanvas.transform.localPosition.y, 89);
+
+        Vector3[] points = new Vector3[4];
+        Vector3[] screenspace = new Vector3[4];
+
+        imageLoadPlane.GetComponent<RectTransform>().GetWorldCorners(points);
+
+        int i = 0;
+
+        foreach (Vector3 point in points)
+        {
+            screenspace[i] = Camera.main.WorldToScreenPoint(point);
+            i++;
+        }
+        //point 2 is top right, point 0 is bottom left
+
+        Texture2D tex = new Texture2D((int)screenspace[2].x - (int)screenspace[0].x, (int)screenspace[2].y - (int)screenspace[0].y, TextureFormat.RGB24, false);
+        Rect rect = new Rect(screenspace[0], screenspace[2] - screenspace[0]);
+
+        if (rect.Contains(Input.mousePosition))
+        {
+            Vector2 pos = new Vector2(Input.mousePosition.x - screenspace[0].x, Input.mousePosition.y - screenspace[0].y);
+            FloodFill(tex, pos, tex.GetPixel((int)Input.mousePosition.x, (int)Input.mousePosition.y));
+        } else
+        {
+            return;
+        }
+    }
+
+    void FloodFill(Texture2D tex, Vector2 pixel, Color target)
+    {
+        if (tex.GetPixel((int)pixel.x, (int)pixel.y) != target)
+        {
+            return;
+        }
+        tex.SetPixel((int)pixel.x, (int)pixel.y, GetComponent<Renderer>().material.color);
+        FloodFill(tex, new Vector2(pixel.x + 1, pixel.y), target);
+        FloodFill(tex, new Vector2(pixel.x - 1, pixel.y), target);
+        FloodFill(tex, new Vector2(pixel.x, pixel.y + 1), target);
+        FloodFill(tex, new Vector2(pixel.x, pixel.y - 1), target);
+        tex.Apply();
     }
 
     public void clearCanvas()

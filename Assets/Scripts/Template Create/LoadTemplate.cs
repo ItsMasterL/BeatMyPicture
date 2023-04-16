@@ -30,6 +30,7 @@ public class LoadTemplate : MonoBehaviour
     public void SelectTemplateForFighter()
     {
         OpenFighter.templateselected = FilePath;
+        GameObject.Find("FIGHTERCHECK").GetComponent<NameCheck>().checkFighters(GameObject.Find("FIGHTERINPUT"));
     }
 
     public void DeleteTemplate()

@@ -37,7 +37,7 @@ public class TemplateSelectScroll : MonoBehaviour
         GetComponent<Scrollbar>().numberOfSteps = (buttons.Length - 1) * 120;
     }
 
-    public void Slidin()
+    public void SlidinTemplate()
     {
         if (enableScroll)
             foreach (GameObject i in buttons)
@@ -59,6 +59,38 @@ public class TemplateSelectScroll : MonoBehaviour
                             (i.transform.localPosition.x,
                             i.GetComponent<LoadTemplate>().yPos + GetComponent<Scrollbar>().value * GetComponent<Scrollbar>().numberOfSteps, i.transform.localPosition.z);
                 }
+            }
+    }
+
+    public void SlidinFighter()
+    {
+        if (enableScroll)
+            foreach (GameObject i in buttons)
+            {
+                if (i == null)
+                {
+                    Refresh();
+                    return;
+                }
+                    i.transform.localPosition = new Vector3
+                            (i.transform.localPosition.x,
+                            i.GetComponent<LoadFighter>().yPos + GetComponent<Scrollbar>().value * GetComponent<Scrollbar>().numberOfSteps, i.transform.localPosition.z);
+            }
+    }
+
+    public void SlidinStage()
+    {
+        if (enableScroll)
+            foreach (GameObject i in buttons)
+            {
+                if (i == null)
+                {
+                    Refresh();
+                    return;
+                }
+                    i.transform.localPosition = new Vector3
+                            (i.transform.localPosition.x,
+                            i.GetComponent<LoadStage>().yPos + GetComponent<Scrollbar>().value * GetComponent<Scrollbar>().numberOfSteps, i.transform.localPosition.z);
             }
     }
 }

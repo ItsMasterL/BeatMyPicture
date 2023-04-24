@@ -14,10 +14,18 @@ public class ReadStages : MonoBehaviour
     public GameObject scrollbar;
 
     public bool delete;
+    public bool stageSelect;
 
     private void Start()
     {
-        Read();
+        if (stageSelect)
+        {
+            ReadStageSel();
+        }
+        else
+        {
+            Read();
+        }
         scrollbar.GetComponent<TemplateSelectScroll>().Refresh();
     }
 
@@ -40,6 +48,37 @@ public class ReadStages : MonoBehaviour
             latestButton = iButton;
             iButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Path.GetFileName(directory);
             iButton.GetComponent<LoadStage>().FilePath = directory;
+        }
+    }
+
+    public void ReadStageSel()
+    {
+        latestButton = NewButton;
+        CharManager.stage = null;
+
+        foreach (GameObject i in GameObject.FindGameObjectsWithTag("FileRead"))
+        {
+            Destroy(i);
+        }
+
+        dir = Directory.GetDirectories(Application.persistentDataPath + Path.DirectorySeparatorChar + "Stages" + Path.DirectorySeparatorChar);
+        bool nextLine = true;
+        foreach (string directory in dir)
+        {
+            GameObject iButton = Instantiate(button, canvas.transform);
+            iButton.transform.localPosition = latestButton.transform.localPosition;
+            if (nextLine)
+            {
+                iButton.transform.localPosition = new Vector3(iButton.transform.localPosition.x + 300, iButton.transform.localPosition.y + 300, iButton.transform.localPosition.z);
+            }
+            else
+            {
+                iButton.transform.localPosition = new Vector3(iButton.transform.localPosition.x, iButton.transform.localPosition.y - 300, iButton.transform.localPosition.z);
+            }
+            latestButton = iButton;
+            iButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Path.GetFileName(directory);
+            iButton.GetComponent<LoadStage>().FilePath = directory;
+            nextLine = !nextLine;
         }
     }
 

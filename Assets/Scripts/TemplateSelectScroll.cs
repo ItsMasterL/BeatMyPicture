@@ -12,6 +12,7 @@ public class TemplateSelectScroll : MonoBehaviour
     float lastPos;
 
     public bool isForFighter;
+    public bool isForSelect;
 
     // Start is called before the first frame update
     void Start()
@@ -33,6 +34,7 @@ public class TemplateSelectScroll : MonoBehaviour
         enableScroll = false;
         if (buttons.Length > 8 && !isForFighter) enableScroll = true;
         if (buttons.Length > 4 && isForFighter) enableScroll = true;
+        if (buttons.Length > 8 && isForSelect) enableScroll = true;
         lastPos = last.transform.localPosition.y - first.transform.localPosition.y;
         GetComponent<Scrollbar>().numberOfSteps = (buttons.Length - 1) * 120;
     }
@@ -91,6 +93,22 @@ public class TemplateSelectScroll : MonoBehaviour
                     i.transform.localPosition = new Vector3
                             (i.transform.localPosition.x,
                             i.GetComponent<LoadStage>().yPos + GetComponent<Scrollbar>().value * GetComponent<Scrollbar>().numberOfSteps, i.transform.localPosition.z);
+            }
+    }
+
+    public void SlidinFighterSelect()
+    {
+        if (enableScroll)
+            foreach (GameObject i in buttons)
+            {
+                if (i == null)
+                {
+                    Refresh();
+                    return;
+                }
+                i.transform.localPosition = new Vector3
+                        (i.GetComponent<LoadFighter>().xPos + GetComponent<Scrollbar>().value * GetComponent<Scrollbar>().numberOfSteps,
+                        i.transform.localPosition.y, i.transform.localPosition.z);
             }
     }
 }

@@ -8,10 +8,12 @@ public class LoadStage : MonoBehaviour
     ReadStages read;
     public string FilePath;
     public float yPos;
+    public float xPos;
 
     private void Start()
     {
         yPos = transform.localPosition.y;
+        xPos = transform.localPosition.x;
         read = GameObject.Find("Stage").GetComponent<ReadStages>();
     }
 

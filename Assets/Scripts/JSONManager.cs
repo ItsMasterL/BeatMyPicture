@@ -316,6 +316,7 @@ public class JSONManager : MonoBehaviour
                 gravity.GetComponent<Toggle>().isOn = frame.hasgravity;
                 pxmotion.GetComponent<TMP_InputField>().text = frame.movex.ToString();
                 pymotion.GetComponent<TMP_InputField>().text = frame.movey.ToString();
+                ddamage.GetComponent<TMP_InputField>().text = frame.damage.ToString();
                 dxpos.GetComponent<TMP_InputField>().text = frame.dmgxoffset.ToString();
                 dypos.GetComponent<TMP_InputField>().text = frame.dmgyoffset.ToString();
                 drad.GetComponent<TMP_InputField>().text = frame.dmgradius.ToString();
@@ -380,6 +381,7 @@ public class JSONManager : MonoBehaviour
         frame.cancancel = true;
         frame.hasgravity = true;
         frame.movex = 0f;
+        frame.damage = 0f;
         frame.dmgxoffset = 0f;
         frame.dmgyoffset = 0f;
         frame.dmgradius = 0f;
@@ -412,6 +414,10 @@ public class JSONManager : MonoBehaviour
         if (pymotion.GetComponent<TMP_InputField>().text != "")
         {
             frame.movey = float.Parse(pymotion.GetComponent<TMP_InputField>().text);
+        }
+        if (dxpos.GetComponent<TMP_InputField>().text != "")
+        {
+            frame.damage = float.Parse(ddamage.GetComponent<TMP_InputField>().text);
         }
         if (dxpos.GetComponent<TMP_InputField>().text != "")
         {

@@ -123,8 +123,8 @@ public class JSONManager : MonoBehaviour
     [System.Serializable]
     public class Frame
     {
-        public string Version = "0.0.1"; //Not in editor
         public int FrameID = 0; //Not editable
+        public string Version = "0.0.1"; //Not in editor
         public string image = "000"; //Coresponds with cutout. Default to 000 if not found
         public float seconds = 0.5f; //Default to 0.5f if <= 0
         public float movex = 0f; //pos is forward, neg is backward || additive
@@ -147,13 +147,13 @@ public class JSONManager : MonoBehaviour
     [System.Serializable]
     public class AnimSet
     {
-        public string Version = "0.0.1"; //Not in editor
         public int SetID; //not editable
+        public string Version = "0.0.1"; //Not in editor
         public List<string> frameIDs;
         //If multiple are assigned the below booleans, pick at random. Prioritize moves with most matching inputs otherwise
         public bool idle; //Ignore every other bool if toggled
         public bool whenGrounded; //Will the animation play only if on the ground, or only if in the air? (Yes, this means no shared arial/ground moves)
-        public bool up; //Jumps will happen after a few frames to allow an up attack if tap jump is on (template properties)
+        public bool up; //Jumps will happen after a few frames to allow an up attack if tap jump is on (player settings)
         public bool down;
         public bool forward;
         public bool backward;

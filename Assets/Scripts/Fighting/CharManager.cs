@@ -44,7 +44,6 @@ public class CharManager : MonoBehaviour
     {
         if (stage != null)
         {
-            GameObject.Find("charselect").SetActive(false);
             SceneManager.LoadScene(nextScene);
         }
     }

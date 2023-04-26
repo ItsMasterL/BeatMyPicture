@@ -186,21 +186,6 @@ public class CamScript : MonoBehaviour
 
         tex.ReadPixels(rect, 0, 0);
         tex.Apply();
-        //FFBC5D - colortrigger
-        Color colortrigger = colorFilter.GetComponent<Image>().color; // color triggers to change
-        Color colorset = new Color(0, 0, 0, 0); //Empty!
-        for (int y = 0; y < tex.height; y++)
-        {
-            for (int x = 0; x < tex.width; x++)
-            {
-                if (tex.GetPixel(x, y) == colortrigger)
-                {
-                    // Change the pixel to transparent
-                    tex.SetPixel(x, y, colorset);
-                }
-            }
-        }
-        tex.Apply();
         byte[] texture = tex.EncodeToPNG();
         Destroy(tex);
 

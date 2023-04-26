@@ -24,6 +24,7 @@ public class RecordAudio : MonoBehaviour
 
     public GameObject hidewhendone;
     public GameObject endscreen;
+    public GameObject lagpage;
 
     private void Awake()
     {
@@ -130,6 +131,7 @@ public class RecordAudio : MonoBehaviour
         {
             endscreen.SetActive(true);
             hidewhendone.SetActive(false);
+            LoadInfoFromTemplates.RemoveBackground(lagpage);
             gameObject.SetActive(false);
         }
     }

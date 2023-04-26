@@ -8031,12 +8031,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   colorset:
-  - main: {r: 0.35857958, g: 0.43293506, b: 0.9622642, a: 1}
-    lightmain: {r: 0.5896226, g: 0.64025354, b: 1, a: 1}
-    darkmain: {r: 0.24296904, g: 0.31076235, b: 0.7924528, a: 1}
-    secondary: {r: 0.5686275, g: 0.5686275, b: 0.91372555, a: 1}
-    lightsecondary: {r: 0.8066038, g: 0.8066038, b: 1, a: 1}
-    darksecondary: {r: 0.2991723, g: 0.2991723, b: 0.7830189, a: 1}
+  - main: {r: 0.358, g: 0.432, b: 0.962, a: 1}
+    lightmain: {r: 0.589, g: 0.64, b: 1, a: 1}
+    darkmain: {r: 0.242, g: 0.31, b: 0.792, a: 1}
+    secondary: {r: 0.568, g: 0.568, b: 0.913, a: 1}
+    lightsecondary: {r: 0.806, g: 0.806, b: 1, a: 1}
+    darksecondary: {r: 0.299, g: 0.299, b: 0.783, a: 1}
   - main: {r: 0.3066038, g: 0.67317057, b: 1, a: 1}
     lightmain: {r: 0.5801887, g: 0.80313927, b: 1, a: 1}
     darkmain: {r: 0.16789784, g: 0.46451145, b: 0.7264151, a: 1}
@@ -13205,7 +13205,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1930237925}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 519420033}
+        m_MethodName: StageCheck
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: FightingScene
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1930237925
 MonoBehaviour:
   m_ObjectHideFlags: 0

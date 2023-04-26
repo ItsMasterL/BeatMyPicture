@@ -28,6 +28,7 @@ public class LoadInfoFromTemplates : MonoBehaviour
     public GameObject prepPage;
     public GameObject startPage;
     public GameObject editPage;
+    public GameObject lagpage;
 
     public JSONManager.AudioAndDescriptions set;
 
@@ -60,12 +61,13 @@ public class LoadInfoFromTemplates : MonoBehaviour
         }
         else if (set.SoundIDs.Count > 0)
         {
-            prepPage.SetActive(false);
             soundPage.SetActive(true);
+            prepPage.SetActive(false);
         } else
         {
-            prepPage.SetActive(false);
+            RemoveBackground(lagpage);
             endPage.SetActive(true);
+            prepPage.SetActive(false);
         }
     }
 
@@ -78,9 +80,11 @@ public class LoadInfoFromTemplates : MonoBehaviour
         {
             string json = File.ReadAllText(OpenFighter.templateselected + Path.DirectorySeparatorChar + "properties.json");
             JSONManager.AudioAndDescriptions set = JsonUtility.FromJson<JSONManager.AudioAndDescriptions>(json);
-
-            descDisplay.text = set.PoseDescriptions[index];
-            pictureDesc.text = descDisplay.text;
+            if (index <= set.PoseDescriptions.Count - 1)
+            {
+                descDisplay.text = set.PoseDescriptions[index];
+                pictureDesc.text = descDisplay.text;
+            }
         }
 
         //Loading image - FIGURE OUT COUROTINES GOSH DARN IT
@@ -143,5 +147,45 @@ public class LoadInfoFromTemplates : MonoBehaviour
         }
         else
             yield return null;
+    }
+
+    public static void RemoveBackground(GameObject lagpage) //Make this ienumerator/courotine sometime!!
+    {
+        lagpage.SetActive(true);
+        Texture2D tex = new Texture2D(2, 2);
+        Color colortrigger = GameObject.Find("ColorPalette").GetComponent<ColorPalettes>().colorset[SetupFiles.profile.ColorID].main; // color triggers to change
+        Color colorset = new Color(0, 0, 0, 0); //Empty!
+        Debug.Log(Directory.GetFiles(OpenFighter.carryover + Path.DirectorySeparatorChar + "Pictures").Length);
+        string key = ColorUtility.ToHtmlStringRGB(colortrigger);
+        Color triggercolor = Color.black;
+        foreach (string file in Directory.GetFiles(OpenFighter.carryover + Path.DirectorySeparatorChar + "Pictures"))
+        {
+            byte[] fileData = File.ReadAllBytes(file);
+            tex = new Texture2D(300, 300);
+            tex.filterMode = FilterMode.Point;
+            tex.LoadImage(fileData);
+            for (int y = 0; y < tex.height; y++)
+            {
+                for (int x = 0; x < tex.width; x++)
+                {
+                    if (triggercolor != Color.black && tex.GetPixel(x, y) == triggercolor)
+                    {
+                        // Change the pixel to transparent
+                        tex.SetPixel(x, y, colorset);
+                    }
+                    else if (ColorUtility.ToHtmlStringRGB(tex.GetPixel(x, y)) == key)
+                    {
+                        //save pixel info to optimise
+                        triggercolor = tex.GetPixel(x,y);
+                        // Change the pixel to transparent
+                        tex.SetPixel(x, y, colorset);
+                    }
+                }
+            }
+            tex.Apply();
+            byte[] texture = tex.EncodeToPNG();
+            File.WriteAllBytes(file, texture);
+        }
+        lagpage.SetActive(false);
     }
 }

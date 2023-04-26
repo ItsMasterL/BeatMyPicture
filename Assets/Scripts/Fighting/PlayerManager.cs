@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using System.IO;
 
 public class PlayerManager : MonoBehaviour
 {
     //controls
+    public Controls input;
     public bool up;
     public bool down;
     public bool left;
@@ -14,6 +16,18 @@ public class PlayerManager : MonoBehaviour
     public bool special;
     public bool taunt;
     public bool jump;
+
+    private InputAction UP;
+    private InputAction DOWN;
+    private InputAction LEFT;
+    private InputAction RIGHT;
+    private InputAction ATK;
+    private InputAction SPECIAL;
+    private InputAction TAUNT;
+    private InputAction JUMP;
+
+    public GameObject joystick;
+    public GameObject[] buttons;
     //info
     public float health = 200f;
     public bool onGround;
@@ -44,77 +58,128 @@ public class PlayerManager : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         LoadJson();
         LoadImages();
+
+        if (CharManager.P1Controls == 0)
+        {
+            foreach(GameObject obj in buttons)
+            {
+                obj.SetActive(true);
+            }
+            joystick.SetActive(false);
+        } else if (CharManager.P1Controls == 1)
+        {
+            foreach (GameObject obj in buttons)
+            {
+                obj.SetActive(false);
+            }
+            joystick.SetActive(true);
+        } else
+        {
+            foreach (GameObject obj in buttons)
+            {
+                obj.SetActive(false);
+            }
+            joystick.SetActive(false);
+        }
+    }
+
+    private void Awake()
+    {
+        input = new Controls();
+    }
+    #region inputs
+    private void OnEnable()
+    {
+        UP = input.Default.Up;
+        UP.Enable();
+        UP.performed += UP_performed;
+        UP.canceled += UP_performed;
+        DOWN = input.Default.Down;
+        DOWN.Enable();
+        DOWN.performed += DOWN_performed;
+        DOWN.canceled += DOWN_performed;
+        LEFT = input.Default.Left;
+        LEFT.Enable();
+        LEFT.performed += LEFT_performed;
+        LEFT.canceled += LEFT_performed;
+        RIGHT = input.Default.Right;
+        RIGHT.Enable();
+        RIGHT.performed += RIGHT_performed;
+        RIGHT.canceled += RIGHT_performed;
+
+        ATK = input.Default.Attack;
+        ATK.Enable();
+        ATK.performed += ATK_performed;
+        ATK.canceled += ATK_performed;
+        SPECIAL = input.Default.Special;
+        SPECIAL.Enable();
+        SPECIAL.performed += SPECIAL_performed;
+        SPECIAL.canceled += SPECIAL_performed;
+        TAUNT = input.Default.Taunt;
+        TAUNT.Enable();
+        TAUNT.performed += TAUNT_performed;
+        TAUNT.canceled += TAUNT_performed;
+        JUMP = input.Default.Jump;
+        JUMP.Enable();
+        JUMP.performed += JUMP_performed;
+        JUMP.canceled += JUMP_performed;
+    }
+
+    private void JUMP_performed(InputAction.CallbackContext obj)
+    {
+        jump = obj.performed;
+    }
+
+    private void TAUNT_performed(InputAction.CallbackContext obj)
+    {
+        taunt = obj.performed;
+    }
+
+    private void SPECIAL_performed(InputAction.CallbackContext obj)
+    {
+        special = obj.performed;
+    }
+
+    private void ATK_performed(InputAction.CallbackContext obj)
+    {
+        atk = obj.performed;
+    }
+
+    private void RIGHT_performed(InputAction.CallbackContext obj)
+    {
+        right = obj.performed;
+    }
+
+    private void LEFT_performed(InputAction.CallbackContext obj)
+    {
+        left = obj.performed;
+    }
+
+    private void DOWN_performed(InputAction.CallbackContext obj)
+    {
+        down = obj.performed;
+    }
+
+    private void UP_performed(InputAction.CallbackContext obj)
+    {
+        up = obj.performed;
+    }
+    #endregion
+    private void OnDisable()
+    {
+        UP.Disable();
+        DOWN.Disable();
+        LEFT.Disable();
+        RIGHT.Disable();
+        ATK.Disable();
+        SPECIAL.Disable();
+        TAUNT.Disable();
+        JUMP.Disable();
     }
 
     // Update is called once per frame
     void Update()
     {
-        #region inputs
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
-        {
-            up = true;
-        } else
-        {
-            up = false;
-        }
-
-        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
-        {
-            down = true;
-        } else
-        {
-            down = false;
-        }
-
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
-        {
-            left = true;
-        } else
-        {
-            left = false;
-        }
-
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
-        {
-            right = true;
-        } else
-        {
-            right = false;
-        }
-
-        if (Input.GetKey(KeyCode.O) || Input.GetKey(KeyCode.Z))
-        {
-            atk = true;
-        } else
-        {
-            atk = false;
-        }
-
-        if (Input.GetKey(KeyCode.P) || Input.GetKey(KeyCode.X))
-        {
-            special = true;
-        } else
-        {
-            special = false;
-        }
-
-        if (Input.GetKey(KeyCode.U) || Input.GetKey(KeyCode.C))
-        {
-            taunt = true;
-        } else
-        {
-            taunt = false;
-        }
-
-        if (Input.GetKey(KeyCode.I) || Input.GetKey(KeyCode.V))
-        {
-            jump = true;
-        } else
-        {
-            jump = false;
-        }
-        #endregion
-
         #region debug
         if (debugMode)
         {
@@ -209,7 +274,7 @@ public class PlayerManager : MonoBehaviour
             //tex.filterMode = FilterMode.Point;
             tex.LoadImage(fileData);
 
-            sprite[i] = Sprite.Create(tex, new Rect(0,0,tex.width,tex.height), new Vector2(0.5f, 0.5f));
+            sprite[i] = Sprite.Create(tex, new Rect(0,0,tex.width,tex.height), new Vector2(0.5f, 0.5f), 100);
             i++;
         }
         sr.sprite = sprite[0];

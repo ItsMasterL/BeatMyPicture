@@ -65,6 +65,7 @@ public class LoadInfoFromTemplates : MonoBehaviour
             prepPage.SetActive(false);
         } else
         {
+            lagpage.SetActive(true);
             RemoveBackground(lagpage);
             endPage.SetActive(true);
             prepPage.SetActive(false);
@@ -151,7 +152,6 @@ public class LoadInfoFromTemplates : MonoBehaviour
 
     public static void RemoveBackground(GameObject lagpage) //Make this ienumerator/courotine sometime!!
     {
-        lagpage.SetActive(true);
         Texture2D tex = new Texture2D(2, 2);
         Color colortrigger = GameObject.Find("ColorPalette").GetComponent<ColorPalettes>().colorset[SetupFiles.profile.ColorID].main; // color triggers to change
         Color colorset = new Color(0, 0, 0, 0); //Empty!

@@ -108,7 +108,7 @@ public class PlayerManager : MonoBehaviour
     public bool onGround;
     public bool landing;
     public bool hurt;
-    public string currentFrame;
+    public int currentFrame;
     public bool facingRight = true;
     public bool forward;
     public bool backward;
@@ -125,6 +125,7 @@ public class PlayerManager : MonoBehaviour
     public JSONManager.AudioAndDescriptions desc;
 
     List<JSONManager.AnimSet> sortedSets;
+    JSONManager.AnimSet active;
 
     //files
     string path;
@@ -166,6 +167,7 @@ public class PlayerManager : MonoBehaviour
             joystick.SetActive(false);
             osc.SetActive(false);
         }
+        CheckSets();
     }
 
     private void Awake()
@@ -311,6 +313,39 @@ public class PlayerManager : MonoBehaviour
         {
             sr.flipX = true;
         }
+
+        if (active != null && frametimer == 0)
+        {
+            foreach (JSONManager.Frame frame in frame)
+            {
+                if (currentFrame == active.frameIDs.Count)
+                {
+                    currentFrame = 0;
+                    foreach (JSONManager.AnimSet set in Set)
+                    {
+                        if (set.SetID.ToString("000") == frame.nextset)
+                        {
+                            active = set;
+                        }
+                    }
+                }
+                if (frame.FrameID.ToString("000") == active.frameIDs[currentFrame])
+                {
+                    sr.sprite = sprite[int.Parse(frame.image)];
+                    frametimer = frame.seconds;
+                }
+            }
+        }
+
+        if (frametimer > 0)
+        {
+            frametimer -= Time.deltaTime;
+        }
+        else
+        {
+            frametimer = 0;
+            currentFrame++;
+        }
     }
 
     void LoadJson()
@@ -441,6 +476,7 @@ public class PlayerManager : MonoBehaviour
             if (set.matches == matches) sortedSets.Add(set);
         }
 
-        Debug.Log("Set " + sortedSets[Random.Range(0, sortedSets.Count)].SetID + " was chosen with " + matches + " matches!");
+        active = sortedSets[Random.Range(0, sortedSets.Count)];
+        Debug.Log("Set " + active.SetID + " was chosen with " + matches + " matches!");
     }
 }

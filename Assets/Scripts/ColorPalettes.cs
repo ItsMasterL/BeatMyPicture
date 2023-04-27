@@ -19,6 +19,10 @@ public class ColorPalettes : MonoBehaviour
 
     private void Awake()
     {
+        if (GameObject.Find("ColorPalette") != gameObject)
+        {
+            Destroy(gameObject);
+        }
         DontDestroyOnLoad(gameObject);
     }
 }

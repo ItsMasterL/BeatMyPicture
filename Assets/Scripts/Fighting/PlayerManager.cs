@@ -8,14 +8,88 @@ public class PlayerManager : MonoBehaviour
 {
     //controls
     public Controls input;
-    public bool up;
-    public bool down;
-    public bool left;
-    public bool right;
-    public bool atk;
-    public bool special;
-    public bool taunt;
-    public bool jump;
+    public bool _up, _down, _left, _right, _atk, _special, _taunt, _jump, _superspecial;
+    bool up
+    {
+        get { return _up; }
+        set
+        {
+            _up = value;
+            CheckSets();
+        }
+    }
+    bool down
+    {
+        get { return _down; }
+        set
+        {
+            _down = value;
+            CheckSets();
+        }
+    }
+    bool left
+    {
+        get { return _left; }
+        set
+        {
+            _left = value;
+            CheckSets();
+        }
+    }
+    bool right
+    {
+        get { return _right; }
+        set
+        {
+            _right = value;
+            CheckSets();
+        }
+    }
+    bool atk
+    {
+        get { return _atk; }
+        set
+        {
+            _atk = value;
+            CheckSets();
+        }
+    }
+    bool special
+    {
+        get { return _special; }
+        set
+        {
+            _special = value;
+            CheckSets();
+        }
+    }
+    bool taunt
+    {
+        get { return _taunt; }
+        set
+        {
+            _taunt = value;
+            CheckSets();
+        }
+    }
+    bool jump
+    {
+        get { return _jump; }
+        set
+        {
+            _jump = value;
+            CheckSets();
+        }
+    }
+    bool superspecial
+    {
+        get { return _superspecial; }
+        set
+        {
+            _superspecial = value;
+            CheckSets();
+        }
+    }
 
     private InputAction UP;
     private InputAction DOWN;
@@ -28,10 +102,16 @@ public class PlayerManager : MonoBehaviour
 
     public GameObject joystick;
     public GameObject[] buttons;
+    public GameObject osc;
     //info
     public float health = 200f;
     public bool onGround;
+    public bool landing;
+    public bool hurt;
     public string currentFrame;
+    public bool facingRight = true;
+    public bool forward;
+    public bool backward;
     public bool debugMode;
     public float iframes;
     public float frametimer;
@@ -43,6 +123,8 @@ public class PlayerManager : MonoBehaviour
     public JSONManager.AnimSet[] Set;
     public JSONManager.Frame[] frame;
     public JSONManager.AudioAndDescriptions desc;
+
+    List<JSONManager.AnimSet> sortedSets;
 
     //files
     string path;
@@ -58,21 +140,23 @@ public class PlayerManager : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         LoadJson();
         LoadImages();
-
+        Debug.Log(CharManager.P1Controls);
         if (CharManager.P1Controls == 0)
         {
             foreach(GameObject obj in buttons)
             {
-                obj.SetActive(true);
+                obj.SetActive(false);
             }
-            joystick.SetActive(false);
+            joystick.SetActive(true);
+            osc.SetActive(true);
         } else if (CharManager.P1Controls == 1)
         {
             foreach (GameObject obj in buttons)
             {
-                obj.SetActive(false);
+                obj.SetActive(true);
             }
-            joystick.SetActive(true);
+            joystick.SetActive(false);
+            osc.SetActive(true);
         } else
         {
             foreach (GameObject obj in buttons)
@@ -80,6 +164,7 @@ public class PlayerManager : MonoBehaviour
                 obj.SetActive(false);
             }
             joystick.SetActive(false);
+            osc.SetActive(false);
         }
     }
 
@@ -147,11 +232,19 @@ public class PlayerManager : MonoBehaviour
 
     private void RIGHT_performed(InputAction.CallbackContext obj)
     {
+        if (obj.performed && facingRight) forward = true;
+        else forward = false;
+        if (obj.performed && !facingRight) backward = true;
+        else backward = false;
         right = obj.performed;
     }
 
     private void LEFT_performed(InputAction.CallbackContext obj)
     {
+        if (obj.performed && !facingRight) forward = true;
+        else forward = false;
+        if (obj.performed && facingRight) backward = true;
+        else backward = false;
         left = obj.performed;
     }
 
@@ -210,6 +303,14 @@ public class PlayerManager : MonoBehaviour
 
         if (sr.sprite != sprite[currentSprite])
             sr.sprite = sprite[currentSprite];
+
+        if (facingRight)
+        {
+            sr.flipX = false;
+        } else
+        {
+            sr.flipX = true;
+        }
     }
 
     void LoadJson()
@@ -256,6 +357,7 @@ public class PlayerManager : MonoBehaviour
         {
             string load = File.ReadAllText(file);
             Set[i] = JsonUtility.FromJson<JSONManager.AnimSet>(load);
+            //sortedSets.Add(Set[i]);
             i++;
         }
     }
@@ -278,5 +380,67 @@ public class PlayerManager : MonoBehaviour
             i++;
         }
         sr.sprite = sprite[0];
+    }
+
+    void CheckSets()
+    {
+        sortedSets = new List<JSONManager.AnimSet>();
+        int inputcount = 0;
+        int matches = 0;
+        if (up) inputcount++;
+        if (down) inputcount++;
+        if (forward) inputcount++;
+        if (backward) inputcount++;
+        if (atk) inputcount++;
+        if (special) inputcount++;
+        if (taunt) inputcount++;
+        if (jump) inputcount++;
+        foreach(JSONManager.AnimSet set in Set)
+        {
+            bool idleskip = false;
+            set.matches = 0;
+            if (set.idle)
+            {
+                if (up == false && down == false && left == false && right == false
+                    && atk == false && special == false && taunt == false && jump == false)
+                {
+                    set.matches = 999999;
+                }
+                idleskip = true;
+            }
+            if (idleskip == false)
+            {
+
+                if (set.whenGrounded == onGround)
+                {
+                    if (set.up == true && up == true) set.matches++;
+                    if (set.forward == true && forward == true) set.matches++;
+                    if (set.backward == true && backward == true) set.matches++;
+                    if (set.down == true && down == true) set.matches++;
+                    if (set.attack == true && atk == true) set.matches++;
+                    if (set.special == true && special == true) set.matches++;
+                    if (set.taunt == true && taunt == true) set.matches++;
+                    if (set.jump == true && jump == true) set.matches++;
+                    if (set.superspecial == true && superspecial == true) set.matches++;
+
+                    if (set.exactInput && set.matches == inputcount)
+                    {
+                        Debug.Log("Exact match");
+                        set.matches = 999999;
+                    }
+                }
+            }
+            if (set.matches > matches)
+            {
+                matches = set.matches;
+                Debug.Log(set.SetID);
+            }
+        }
+        foreach(JSONManager.AnimSet set in Set)
+        {
+            if (set.matches == matches) sortedSets.Add(set);
+        }
+
+        Debug.Log("Set " + sortedSets[Random.Range(0, sortedSets.Count)].SetID + " was chosen with " + matches + " matches!");
     }
 }

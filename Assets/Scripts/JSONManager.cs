@@ -166,6 +166,7 @@ public class JSONManager : MonoBehaviour
         public bool superspecial; //Only available when under 25% health
         public bool exactInput; //for example, can you taunt while holding an input or does it have to be neutral taunt
         public bool isPlaying; //Not in editor
+        public int matches; //exclusively for player manager
     }
 
     [System.Serializable]

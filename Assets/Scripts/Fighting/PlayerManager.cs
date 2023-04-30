@@ -477,16 +477,16 @@ public class PlayerManager : MonoBehaviour
         {
             frametimer = 0;
             sortedSets = new List<JSONManager.AnimSet>();
-            int inputcount = 0;
-            int matches = 0;
-            if (up) inputcount++;
-            if (down) inputcount++;
-            if (forward) inputcount++;
-            if (backward) inputcount++;
-            if (atk) inputcount++;
-            if (special) inputcount++;
-            if (taunt) inputcount++;
-            if (jump) inputcount++;
+            int inputcount = 0b00000000;
+            int matches = 0b00000000;
+            if (up) inputcount = inputcount | 0b00000001;
+            if (down) inputcount = inputcount | 0b00000010;
+            if (forward) inputcount = inputcount | 0b00000100;
+            if (backward) inputcount = inputcount | 0b00001000;
+            if (atk) inputcount = inputcount | 0b00010000;
+            if (special) inputcount = inputcount | 0b00100000;
+            if (taunt) inputcount = inputcount | 0b01000000;
+            if (jump) inputcount = inputcount | 0b10000000;
             foreach (JSONManager.AnimSet set in Set)
             {
                 bool idleskip = false;
@@ -505,29 +505,37 @@ public class PlayerManager : MonoBehaviour
 
                     if (set.whenGrounded == onGround)
                     {
-                        if (set.up == true && up == true) set.matches++;
-                        if (set.forward == true && forward == true) set.matches++;
-                        if (set.backward == true && backward == true) set.matches++;
-                        if (set.down == true && down == true) set.matches++;
-                        if (set.attack == true && atk == true) set.matches++;
-                        if (set.special == true && special == true) set.matches++;
-                        if (set.taunt == true && taunt == true) set.matches++;
-                        if (set.jump == true && jump == true) set.matches++;
-                        if (set.superspecial == true && superspecial == true) set.matches++;
+                        if (set.up == true) set.matches = set.matches | 0b00000001;
+                        if (set.forward == true) set.matches = set.matches | 0b00000010;
+                        if (set.backward == true) set.matches = set.matches | 0b00000100;
+                        if (set.down == true) set.matches = set.matches | 0b00001000;
+                        if (set.attack == true) set.matches = set.matches | 0b00010000;
+                        if (set.special == true) set.matches = set.matches | 0b00100000;
+                        if (set.taunt == true) set.matches = set.matches | 0b01000000;
+                        if (set.jump == true) set.matches = set.matches | 0b10000000;
+                        //if (set.superspecial == true && superspecial == true) set.matches++; (how i did it before)
 
-                        if (set.exactInput && set.matches == inputcount && inputcount != 0)
+                        //if (set.exactInput && set.matches == inputcount && inputcount != 0) (old code)
+                        //{
+                        //    //TODO: Add binary counting system for checking (0000100 is gonna be equal to 0000100 and not 0010000)
+                        //    Debug.Log("Exact match");
+                        //}
+                        if (set.matches == inputcount && inputcount != 0) //works
                         {
-                            //TODO: Add binary counting system for checking (0000100 is gonna be equal to 0000100 and not 0010000)
-                            Debug.Log("Exact match");
-                            set.matches = 999999;
+                            Debug.Log("Exact");
+                        }
+
+                        if ((inputcount & set.matches) != 0 && inputcount != 0) //will activate falsely, i.e. input down activates forward, backward, and up (8 > 7)
+                        {
+                            Debug.Log("Includes input");
                         }
                     }
                 }
-                if (set.matches > matches)
-                {
-                    matches = set.matches;
-                    Debug.Log(set.SetID);
-                }
+                //if (set.matches > matches)
+                //{
+                //    matches = set.matches;
+                //    Debug.Log(set.SetID);
+                //}
             }
             if (matches == 0 && !desc.randomOnNoMatch) return;
             foreach (JSONManager.AnimSet set in Set)

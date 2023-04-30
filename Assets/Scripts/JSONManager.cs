@@ -110,6 +110,7 @@ public class JSONManager : MonoBehaviour
     public TMP_InputField select;
     public TMP_InputField win;
     public TMP_InputField lose;
+    public Toggle random;
     #endregion
 
     private void Start()
@@ -182,6 +183,7 @@ public class JSONManager : MonoBehaviour
         public string SelectPose;
         public string WinPose;
         public string LosePose;
+        public bool randomOnNoMatch = true;
     }
     
     public AnimSet Set = new AnimSet();
@@ -805,6 +807,7 @@ public class JSONManager : MonoBehaviour
         desc.SelectPose = select.text;
         desc.WinPose = win.text;
         desc.LosePose = lose.text;
+        desc.randomOnNoMatch = random.isOn;
         saveDescriptionsJSON();
     }
 
@@ -819,6 +822,7 @@ public class JSONManager : MonoBehaviour
         select.text = desc.SelectPose;
         win.text = desc.WinPose;
         lose.text = desc.LosePose;
+        random.isOn = desc.randomOnNoMatch;
     }
 
     public void saveDescriptionsJSON()

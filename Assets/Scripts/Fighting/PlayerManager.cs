@@ -105,6 +105,7 @@ public class PlayerManager : MonoBehaviour
     public GameObject osc;
     #endregion
     //info
+    public bool P1;
     public bool debugMode;
     public float health = 200f;
     public bool onGround;
@@ -173,7 +174,7 @@ public class PlayerManager : MonoBehaviour
             joystick.SetActive(false);
             osc.SetActive(false);
         }
-        ForceCancelSet();
+        CheckSets(false);
     }
 
     private void Awake()
@@ -183,39 +184,42 @@ public class PlayerManager : MonoBehaviour
     #region inputs
     private void OnEnable()
     {
-        UP = input.Default.Up;
-        UP.Enable();
-        UP.performed += UP_performed;
-        UP.canceled += UP_performed;
-        DOWN = input.Default.Down;
-        DOWN.Enable();
-        DOWN.performed += DOWN_performed;
-        DOWN.canceled += DOWN_performed;
-        LEFT = input.Default.Left;
-        LEFT.Enable();
-        LEFT.performed += LEFT_performed;
-        LEFT.canceled += LEFT_performed;
-        RIGHT = input.Default.Right;
-        RIGHT.Enable();
-        RIGHT.performed += RIGHT_performed;
-        RIGHT.canceled += RIGHT_performed;
+        if (P1)
+        {
+            UP = input.Default.Up;
+            UP.Enable();
+            UP.performed += UP_performed;
+            UP.canceled += UP_performed;
+            DOWN = input.Default.Down;
+            DOWN.Enable();
+            DOWN.performed += DOWN_performed;
+            DOWN.canceled += DOWN_performed;
+            LEFT = input.Default.Left;
+            LEFT.Enable();
+            LEFT.performed += LEFT_performed;
+            LEFT.canceled += LEFT_performed;
+            RIGHT = input.Default.Right;
+            RIGHT.Enable();
+            RIGHT.performed += RIGHT_performed;
+            RIGHT.canceled += RIGHT_performed;
 
-        ATK = input.Default.Attack;
-        ATK.Enable();
-        ATK.performed += ATK_performed;
-        ATK.canceled += ATK_performed;
-        SPECIAL = input.Default.Special;
-        SPECIAL.Enable();
-        SPECIAL.performed += SPECIAL_performed;
-        SPECIAL.canceled += SPECIAL_performed;
-        TAUNT = input.Default.Taunt;
-        TAUNT.Enable();
-        TAUNT.performed += TAUNT_performed;
-        TAUNT.canceled += TAUNT_performed;
-        JUMP = input.Default.Jump;
-        JUMP.Enable();
-        JUMP.performed += JUMP_performed;
-        JUMP.canceled += JUMP_performed;
+            ATK = input.Default.Attack;
+            ATK.Enable();
+            ATK.performed += ATK_performed;
+            ATK.canceled += ATK_performed;
+            SPECIAL = input.Default.Special;
+            SPECIAL.Enable();
+            SPECIAL.performed += SPECIAL_performed;
+            SPECIAL.canceled += SPECIAL_performed;
+            TAUNT = input.Default.Taunt;
+            TAUNT.Enable();
+            TAUNT.performed += TAUNT_performed;
+            TAUNT.canceled += TAUNT_performed;
+            JUMP = input.Default.Jump;
+            JUMP.Enable();
+            JUMP.performed += JUMP_performed;
+            JUMP.canceled += JUMP_performed;
+        }
     }
 
     private void JUMP_performed(InputAction.CallbackContext obj)
@@ -336,7 +340,7 @@ public class PlayerManager : MonoBehaviour
                 }
                 currentFrame = 0;
                 if (matched2 == false)
-                    ForceCancelSet();
+                    CheckSets(false);
             }
             foreach (JSONManager.Frame frames in frame) 
             {
@@ -355,8 +359,10 @@ public class PlayerManager : MonoBehaviour
                                 hitbox.GetComponent<SpriteRenderer>().enabled = true;
                             else
                                 hitbox.GetComponent<SpriteRenderer>().enabled = false;
-
-                            hitbox.transform.localPosition = new Vector2(frames.dmgxoffset, frames.dmgyoffset);
+                            if (facingRight)
+                                hitbox.transform.localPosition = new Vector2(frames.dmgxoffset, frames.dmgyoffset);
+                            else
+                                hitbox.transform.localPosition = new Vector2(-frames.dmgxoffset, frames.dmgyoffset);
                             hitbox.transform.localScale = new Vector3(frames.dmgradius, frames.dmgradius);
                         }
                     }
@@ -379,26 +385,36 @@ public class PlayerManager : MonoBehaviour
             {
                 GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, frame[int.Parse(active.frameIDs[currentFrame])].movey);
             }
-            if (hitbox != null)
-            {
-                ContactFilter2D filter = new ContactFilter2D();
-                filter.layerMask = LayerMask.GetMask("Player");
-                Collider2D[] collider = new Collider2D[0];
-                hitbox.GetComponent<CircleCollider2D>().OverlapCollider(filter, collider);
-                foreach(Collider2D col in collider)
-                {
-                    if (col.gameObject != gameObject)
-                    {
-                        col.gameObject.GetComponent<PlayerManager>().TakeDamage(frametimer,currentDamage);
-                    }
-                }
-            }
+            //if (hitbox != null)
+            //{
+            //    ContactFilter2D filter = new ContactFilter2D();
+            //    filter.layerMask = LayerMask.GetMask("Player");
+            //    Collider2D[] collider = new Collider2D[0];
+            //    hitbox.GetComponent<CircleCollider2D>().OverlapCollider(filter, collider);
+            //    foreach(Collider2D col in collider)
+            //    {
+            //        //if (col.gameObject != col.transform.parent.gameObject)
+            //        {
+            //            col.gameObject.GetComponent<PlayerManager>().TakeDamage(frametimer,currentDamage);
+            //        }
+            //    }
+            //}
         }
         else
         {
             hitbox.gameObject.SetActive(false);
             frametimer = 0;
             currentFrame++;
+        }
+
+        if (iframes > 0)
+        {
+            iframes -= Time.deltaTime;
+        } else
+        {
+            iframes = 0;
+            hurt = false;
+            sr.color = new Color(1, 1, 1, 1);
         }
     }
 
@@ -471,153 +487,102 @@ public class PlayerManager : MonoBehaviour
         sr.sprite = sprite[0];
     }
 
-    void CheckSets()
+    void CheckSets(bool checkcancel = true)
     {
-        if (frame[int.Parse(active.frameIDs[currentFrame])].cancancel)
+        if (checkcancel == true)
         {
-            frametimer = 0;
-            sortedSets = new List<JSONManager.AnimSet>();
-            int inputcount = 0b00000000;
-            int matches = 0b00000000;
-            if (up) inputcount = inputcount | 0b00000001;
-            if (down) inputcount = inputcount | 0b00000010;
-            if (forward) inputcount = inputcount | 0b00000100;
-            if (backward) inputcount = inputcount | 0b00001000;
-            if (atk) inputcount = inputcount | 0b00010000;
-            if (special) inputcount = inputcount | 0b00100000;
-            if (taunt) inputcount = inputcount | 0b01000000;
-            if (jump) inputcount = inputcount | 0b10000000;
-            foreach (JSONManager.AnimSet set in Set)
-            {
-                bool idleskip = false;
-                set.matches = 0;
-                if (set.idle)
-                {
-                    if (up == false && down == false && left == false && right == false
-                        && atk == false && special == false && taunt == false && jump == false)
-                    {
-                        set.matches = 999999;
-                    }
-                    idleskip = true;
-                }
-                if (idleskip == false)
-                {
-
-                    if (set.whenGrounded == onGround)
-                    {
-                        if (set.up == true) set.matches = set.matches | 0b00000001;
-                        if (set.forward == true) set.matches = set.matches | 0b00000010;
-                        if (set.backward == true) set.matches = set.matches | 0b00000100;
-                        if (set.down == true) set.matches = set.matches | 0b00001000;
-                        if (set.attack == true) set.matches = set.matches | 0b00010000;
-                        if (set.special == true) set.matches = set.matches | 0b00100000;
-                        if (set.taunt == true) set.matches = set.matches | 0b01000000;
-                        if (set.jump == true) set.matches = set.matches | 0b10000000;
-                        //if (set.superspecial == true && superspecial == true) set.matches++; (how i did it before)
-
-                        //if (set.exactInput && set.matches == inputcount && inputcount != 0) (old code)
-                        //{
-                        //    //TODO: Add binary counting system for checking (0000100 is gonna be equal to 0000100 and not 0010000)
-                        //    Debug.Log("Exact match");
-                        //}
-                        if (set.matches == inputcount && inputcount != 0) //works
-                        {
-                            Debug.Log("Exact");
-                        }
-
-                        if ((inputcount & set.matches) != 0 && inputcount != 0) //will activate falsely, i.e. input down activates forward, backward, and up (8 > 7)
-                        {
-                            Debug.Log("Includes input");
-                        }
-                    }
-                }
-                //if (set.matches > matches)
-                //{
-                //    matches = set.matches;
-                //    Debug.Log(set.SetID);
-                //}
-            }
-            if (matches == 0 && !desc.randomOnNoMatch) return;
-            foreach (JSONManager.AnimSet set in Set)
-            {
-                if (set.matches == matches) sortedSets.Add(set);
-            }
-            active = sortedSets[Random.Range(0, sortedSets.Count)];
-            Debug.Log("Set " + active.SetID + " was chosen with " + matches + " matches!");
+            if (frame[int.Parse(active.frameIDs[currentFrame])].cancancel == false) return;
         }
-    }
-
-    void ForceCancelSet()
-    {
         frametimer = 0;
         sortedSets = new List<JSONManager.AnimSet>();
-        int inputcount = 0;
-        int matches = 0;
-        if (up) inputcount++;
-        if (down) inputcount++;
-        if (forward) inputcount++;
-        if (backward) inputcount++;
-        if (atk) inputcount++;
-        if (special) inputcount++;
-        if (taunt) inputcount++;
-        if (jump) inputcount++;
+        int inputcount = 0b0000_0000;
+        if (up) inputcount = inputcount | 0b0000_0001;
+        if (down) inputcount = inputcount | 0b0000_0010;
+        if (forward) inputcount = inputcount | 0b0000_0100;
+        if (backward) inputcount = inputcount | 0b0000_1000;
+        if (atk) inputcount = inputcount | 0b0001_0000;
+        if (special) inputcount = inputcount | 0b0010_0000;
+        if (taunt) inputcount = inputcount | 0b0100_0000;
+        if (jump) inputcount = inputcount | 0b1000_0000;
+        Debug.Log(inputcount);
+
+        bool exactMatch = false;
+        if (inputcount == 0b0000_0000)
+        {
+            foreach (JSONManager.AnimSet set in Set)
+            {
+                set.matches = 0b0000_0000;
+                if (set.idle)
+                {
+                    sortedSets.Add(set);
+                }
+            }
+            active = sortedSets[Random.Range(0, sortedSets.Count)];
+            Debug.Log("Set " + active.SetID + " was chosen! Idle");
+        }
         foreach (JSONManager.AnimSet set in Set)
         {
-            bool idleskip = false;
-            set.matches = 0;
-            if (set.idle)
+            if (set.whenGrounded == onGround)
             {
-                if (up == false && down == false && left == false && right == false
-                    && atk == false && special == false && taunt == false && jump == false)
-                {
-                    set.matches = 999999;
-                }
-                idleskip = true;
-            }
-            if (idleskip == false)
-            {
+                if (set.up == true) set.matches = set.matches | 0b0000_0001;
+                if (set.down == true) set.matches = set.matches | 0b0000_0010;
+                if (set.forward == true) set.matches = set.matches | 0b0000_0100;
+                if (set.backward == true) set.matches = set.matches | 0b0000_1000;
+                if (set.attack == true) set.matches = set.matches | 0b0001_0000;
+                if (set.special == true) set.matches = set.matches | 0b0010_0000;
+                if (set.taunt == true) set.matches = set.matches | 0b0100_0000;
+                if (set.jump == true) set.matches = set.matches | 0b1000_0000;
+                //if (set.superspecial == true && superspecial == true) set.matches++; ADD LATER
 
-                if (set.whenGrounded == onGround)
+                if (set.matches == inputcount && inputcount != 0) //works
                 {
-                    if (set.up == true && up == true) set.matches++;
-                    if (set.forward == true && forward == true) set.matches++;
-                    if (set.backward == true && backward == true) set.matches++;
-                    if (set.down == true && down == true) set.matches++;
-                    if (set.attack == true && atk == true) set.matches++;
-                    if (set.special == true && special == true) set.matches++;
-                    if (set.taunt == true && taunt == true) set.matches++;
-                    if (set.jump == true && jump == true) set.matches++;
-                    if (set.superspecial == true && superspecial == true) set.matches++;
-
-                    if (set.exactInput && set.matches == inputcount && inputcount != 0)
-                    {
-                        //TODO: Add binary counting system for checking (0000100 is gonna be equal to 0000100 and not 0010000)
-                        Debug.Log("Exact match");
-                        set.matches = 999999;
-                    }
+                    Debug.Log("Exact");
+                    sortedSets.Add(set);
+                    exactMatch = true;
                 }
-            }
-            if (set.matches > matches)
-            {
-                matches = set.matches;
-                Debug.Log(set.SetID);
             }
         }
-        if (matches == 0 && !desc.randomOnNoMatch) return;
-        foreach (JSONManager.AnimSet set in Set)
+        if (exactMatch == false)
         {
-            if (set.matches == matches) sortedSets.Add(set);
+            foreach (JSONManager.AnimSet set in Set) //TODO: add sorting logic? make it so highest takes priority?
+            {
+                if ((inputcount & set.matches) != 0 && inputcount != 0)
+                {
+                    Debug.Log("Includes input; " + set.matches);
+                    sortedSets.Add(set);
+                }
+            }
+            foreach (JSONManager.AnimSet set in sortedSets)
+            {
+                Debug.Log("Set " + set.SetID);
+            }
+        }
+        if (sortedSets.Count == 0 && desc.randomOnNoMatch)
+        {
+            foreach (JSONManager.AnimSet set in Set)
+            {
+                sortedSets.Add(set);
+            }
+        }
+        if (sortedSets.Count == 0)
+        {
+            sortedSets.Add(Set[0]);
         }
         active = sortedSets[Random.Range(0, sortedSets.Count)];
-        Debug.Log("Set " + active.SetID + " was chosen with " + matches + " matches!");
+        Debug.Log("Set " + active.SetID + " was chosen! Exact match: " + exactMatch);
     }
 
-    void TakeDamage(float iframe, float dmg)
+    public void TakeDamage(float iframe, float dmg)
     {
         if (iframes == 0)
         {
             iframes = iframe;
             health -= dmg;
+            hurt = true;
+            if (debugMode)
+            {
+                sr.color = new Color(1, 1, 1, 0.75f);
+            }
         }
     }
 

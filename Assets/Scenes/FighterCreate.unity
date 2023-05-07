@@ -11633,6 +11633,7 @@ MonoBehaviour:
     SelectPose: 
     WinPose: 
     LosePose: 
+    randomOnNoMatch: 1
 --- !u!1 &2061565796
 GameObject:
   m_ObjectHideFlags: 0
@@ -12242,6 +12243,7 @@ GameObject:
   - component: {fileID: 2143769470}
   - component: {fileID: 2143769469}
   - component: {fileID: 2143769468}
+  - component: {fileID: 2143769472}
   m_Layer: 5
   m_Name: lag screen
   m_TagString: Untagged
@@ -12330,3 +12332,15 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &2143769472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2143769467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d378098ec75f7624b85b1ee6f552bcc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -66,7 +66,6 @@ public class LoadInfoFromTemplates : MonoBehaviour
         } else
         {
             lagpage.SetActive(true);
-            RemoveBackground(lagpage);
             endPage.SetActive(true);
             prepPage.SetActive(false);
         }

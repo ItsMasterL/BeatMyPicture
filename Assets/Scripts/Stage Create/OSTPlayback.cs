@@ -7,21 +7,23 @@ public class OSTPlayback : MonoBehaviour
 {
     [SerializeField]
     List<AudioClip> songs;
+    public AudioClip custom;
     [SerializeField]
     TextMeshProUGUI display;
     AudioSource sound;
 
+    public bool customSong;
     public int songChoice;
 
-    float startpos;
-    float looppos;
-    float endpos;
+    public float startpos;
+    public float looppos;
+    public float endpos;
 
     float backby;
 
     public List<string> songnames;
 
-    private void Start()
+    private void Awake()
     {
         sound = GetComponent<AudioSource>();
     }
@@ -34,42 +36,61 @@ public class OSTPlayback : MonoBehaviour
 
     public void PlayPause()
     {
-        if (sound.isPlaying)
+        if (customSong == false)
         {
-            sound.Pause();
-            sound.time = 0;
+            if (sound.isPlaying)
+            {
+                sound.Pause();
+                sound.time = 0;
+            }
+            else
+            {
+                switch (songChoice)
+                {
+                    default:
+                        startpos = 0f;
+                        looppos = 0f;
+                        endpos = 67.265f;
+                        break;
+
+                    case 1:
+                        startpos = 0f;
+                        looppos = 3.256f;
+                        endpos = 60.856f;
+                        break;
+
+                    case 2:
+                        startpos = 0f;
+                        looppos = 18.064f;
+                        endpos = 74.063f;
+                        break;
+
+                    case 3:
+                        startpos = 0f;
+                        looppos = 48.060f;
+                        endpos = 91.261f;
+                        break;
+                }
+
+                backby = endpos - looppos;
+                sound.clip = songs[songChoice];
+                sound.time = startpos;
+                sound.Play();
+            }
         } else
         {
-            switch (songChoice)
+            if (sound.isPlaying)
             {
-                default:
-                    startpos = 0f;
-                    looppos = 0f;
-                    endpos = 67.265f;
-                    break;
-
-                case 1:
-                    startpos = 0f;
-                    looppos = 3.256f;
-                    endpos = 60.856f;
-                    break;
-
-                case 2:
-                    startpos = 0f;
-                    looppos = 18.064f;
-                    endpos = 74.063f;
-                    break;
-
-                case 3:
-                    startpos = 0f;
-                    looppos = 48.060f;
-                    endpos = 91.261f;
-                    break;
+                sound.Pause();
+                sound.time = 0;
             }
-
-            backby = endpos - looppos;
-            sound.clip = songs[songChoice];
-            sound.Play();
+            else
+            {
+                backby = endpos - looppos;
+                sound.clip = custom;
+                sound.time = startpos;
+                sound.Play();
+            }
         }
     }
 
@@ -108,6 +129,15 @@ public class OSTPlayback : MonoBehaviour
         if (sound.isPlaying && sound.time >= endpos)
         {
             sound.time -= backby;
+        }
+
+        if (!sound.isPlaying && customSong && custom == null)
+        {
+            if (GetComponent<AudioLoader>().songs.Count != 0)
+            {
+                custom = GetComponent<AudioLoader>().songs[0];
+                PlayPause();
+            }
         }
     }
 }

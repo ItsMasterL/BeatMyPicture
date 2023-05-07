@@ -7,8 +7,7 @@ using System.IO;
 
 public class AudioLoader : MonoBehaviour
 {
-    [SerializeField]
-    private List<AudioClip> songs;
+    public List<AudioClip> songs;
     private AudioSource sound;
     float temptimer;
     public float lastImportLength;

@@ -136,28 +136,39 @@ public class PlayerManager : MonoBehaviour
     string template;
     string match;
     Sprite[] sprite;
+    [SerializeField]
+    List<AudioClip> clips;
+    [SerializeField]
+    List<AudioClip> templateclips;
+    AudioSource audioSource;
     SpriteRenderer sr;
     int currentSprite;
 
     //debug
     public GameObject hitbox;
 
+    //loading
+    int spritesLoaded;
+    public GameObject scaleMatch;
     // Start is called before the first frame update
     void Start()
     {
         sr = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
         LoadJson();
         LoadImages();
+        LoadSound();
         Debug.Log(CharManager.P1Controls);
         if (CharManager.P1Controls == 0)
         {
-            foreach(GameObject obj in buttons)
+            foreach (GameObject obj in buttons)
             {
                 obj.SetActive(false);
             }
             joystick.SetActive(true);
             osc.SetActive(true);
-        } else if (CharManager.P1Controls == 1)
+        }
+        else if (CharManager.P1Controls == 1)
         {
             foreach (GameObject obj in buttons)
             {
@@ -165,7 +176,8 @@ public class PlayerManager : MonoBehaviour
             }
             joystick.SetActive(false);
             osc.SetActive(true);
-        } else
+        }
+        else
         {
             foreach (GameObject obj in buttons)
             {
@@ -174,6 +186,9 @@ public class PlayerManager : MonoBehaviour
             joystick.SetActive(false);
             osc.SetActive(false);
         }
+        
+        //TODO: Match player scale to scale object
+
         CheckSets(false);
     }
 
@@ -285,6 +300,13 @@ public class PlayerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (spritesLoaded < sprite.Length)
+        {
+            sr.sprite = sprite[spritesLoaded];
+            spritesLoaded++;
+            return;
+        }
+
         #region debug
         if (debugMode)
         {
@@ -318,10 +340,10 @@ public class PlayerManager : MonoBehaviour
 
         if (facingRight)
         {
-            sr.flipX = false;
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         } else
         {
-            sr.flipX = true;
+            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
 
         if (active != null && frametimer == 0)
@@ -353,7 +375,7 @@ public class PlayerManager : MonoBehaviour
                         matched = true;
                         if (frames.damage != 0 && frames.projectilelife == 0)
                         {
-                            currentDamage = frames.damage;
+                            currentDamage = Mathf.Abs(frames.damage);
                             hitbox.gameObject.SetActive(true);
                             if (debugMode)
                                 hitbox.GetComponent<SpriteRenderer>().enabled = true;
@@ -364,6 +386,19 @@ public class PlayerManager : MonoBehaviour
                             else
                                 hitbox.transform.localPosition = new Vector2(-frames.dmgxoffset, frames.dmgyoffset);
                             hitbox.transform.localScale = new Vector3(frames.dmgradius, frames.dmgradius);
+                        }
+                        if (frames.sound != "")
+                        {
+                            if (int.Parse(frames.sound) < 100 && frames.sound.ToCharArray().Length < 3)
+                            {
+                                audioSource.clip = clips[int.Parse(frames.sound)];
+                                audioSource.Play();
+                            }
+                            else if (frames.sound.ToCharArray().Length == 3)
+                            {
+                                audioSource.clip = templateclips[int.Parse(frames.sound)];
+                                audioSource.Play();
+                            }
                         }
                     }
                 }
@@ -422,7 +457,14 @@ public class PlayerManager : MonoBehaviour
     {
         desc = null;
         match = "";
-        path = CharManager.P1Fighter;
+        if (P1 && CharManager.P1Fighter != null)
+        {
+            path = CharManager.P1Fighter;
+        } else
+        {   //Remove/change this when local multiplayer is involved
+            string[] dir = Directory.GetDirectories(Application.persistentDataPath + Path.DirectorySeparatorChar + "Fighters");
+            path = dir[Random.Range(0,dir.Length)];
+        }
         template = File.ReadAllText(path + Path.DirectorySeparatorChar + "template.noedit");
 
         foreach(string dir in Directory.GetDirectories(Application.persistentDataPath + Path.DirectorySeparatorChar + "Templates"))
@@ -484,8 +526,72 @@ public class PlayerManager : MonoBehaviour
             sprite[i] = Sprite.Create(tex, new Rect(0,0,tex.width,tex.height), new Vector2(0.5f, 0.5f), 100);
             i++;
         }
-        sr.sprite = sprite[0];
     }
+
+    #region LoadSound
+    void LoadSound()
+    {
+        if (Directory.GetFiles(path + Path.DirectorySeparatorChar + "Sounds").Length > 0)
+        {
+            GetAllAudioFromFolder(path + Path.DirectorySeparatorChar + "Sounds");
+        }
+
+        if (Directory.GetFiles(match + Path.DirectorySeparatorChar + "Sound").Length > 0)
+        {
+            GetAllTemplateAudioFromFolder(match + Path.DirectorySeparatorChar + "Sound");
+        }
+    }
+
+    public void GetAllAudioFromFolder(string filepath)
+    {
+        clips.Clear();
+        DirectoryInfo directoryInfo = new DirectoryInfo(filepath);
+        FileInfo[] songFiles = directoryInfo.GetFiles("*.*");
+
+        foreach (FileInfo songFile in songFiles)
+        {
+            StartCoroutine(ConvertFilesToAudioClip(songFile));
+        }
+    }
+    public void GetAllTemplateAudioFromFolder(string filepath)
+    {
+        clips.Clear();
+        DirectoryInfo directoryInfo = new DirectoryInfo(filepath);
+        FileInfo[] songFiles = directoryInfo.GetFiles("*.*");
+
+        foreach (FileInfo songFile in songFiles)
+        {
+            StartCoroutine(ConvertTemplateFilesToAudioClip(songFile));
+        }
+    }
+
+    private IEnumerator ConvertFilesToAudioClip(FileInfo songFile)
+    {
+        if (songFile.Name.Contains("meta"))
+            yield break;
+        else
+        {
+            string songName = songFile.FullName.ToString();
+            string url = string.Format("file://{0}", songName);
+            WWW www = new WWW(url);
+            yield return www;
+            clips.Add(www.GetAudioClip(false, false));
+        }
+    }
+    private IEnumerator ConvertTemplateFilesToAudioClip(FileInfo songFile)
+    {
+        if (songFile.Name.Contains("meta"))
+            yield break;
+        else
+        {
+            string songName = songFile.FullName.ToString();
+            string url = string.Format("file://{0}", songName);
+            WWW www = new WWW(url);
+            yield return www;
+            templateclips.Add(www.GetAudioClip(false, false));
+        }
+    }
+    #endregion
 
     void CheckSets(bool checkcancel = true)
     {
@@ -507,7 +613,7 @@ public class PlayerManager : MonoBehaviour
         Debug.Log(inputcount);
 
         bool exactMatch = false;
-        if (inputcount == 0b0000_0000)
+        if (inputcount == 0b0000_0000 && onGround)
         {
             foreach (JSONManager.AnimSet set in Set)
             {
@@ -574,7 +680,7 @@ public class PlayerManager : MonoBehaviour
 
     public void TakeDamage(float iframe, float dmg)
     {
-        if (iframes == 0)
+        if (iframes == 0 && frame[int.Parse(active.frameIDs[currentFrame])].invincible == false)
         {
             iframes = iframe;
             health -= dmg;

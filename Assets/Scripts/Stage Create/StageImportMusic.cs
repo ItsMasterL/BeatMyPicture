@@ -74,11 +74,11 @@ public class StageImportMusic : MonoBehaviour
         }
         FileImporter.GetFile("audio");
         if (FileImporter.LastResult.Substring(FileImporter.LastResult.Length - 3) == "mp3")
-            File.Copy(FileImporter.LastResult, OpenStage.carryover + Path.DirectorySeparatorChar + Path.DirectorySeparatorChar + filename + ".mp3");
+            File.Copy(FileImporter.LastResult, OpenStage.carryover +  Path.DirectorySeparatorChar + filename + ".mp3");
         if (FileImporter.LastResult.Substring(FileImporter.LastResult.Length - 3) == "wav")
-            File.Copy(FileImporter.LastResult, OpenStage.carryover + Path.DirectorySeparatorChar + Path.DirectorySeparatorChar + filename + ".wav");
+            File.Copy(FileImporter.LastResult, OpenStage.carryover +  Path.DirectorySeparatorChar + filename + ".wav");
         if (FileImporter.LastResult.Substring(FileImporter.LastResult.Length - 3) == "ogg")
-            File.Copy(FileImporter.LastResult, OpenStage.carryover + Path.DirectorySeparatorChar + Path.DirectorySeparatorChar + filename + ".ogg");
+            File.Copy(FileImporter.LastResult, OpenStage.carryover +  Path.DirectorySeparatorChar + filename + ".ogg");
         GameObject.Find("PlayCustom").GetComponent<AudioLoader>().PlayMusic(0); //This preloads the song
     }
 
@@ -86,15 +86,15 @@ public class StageImportMusic : MonoBehaviour
     {
         if (File.Exists(OpenStage.carryover + Path.DirectorySeparatorChar + filename + ".mp3"))
         {
-            audioloader.GetComponent<AudioLoader>().GetSpecificSongFromFolder(OpenStage.carryover + Path.DirectorySeparatorChar + Path.DirectorySeparatorChar, filename + ".mp3");
+            audioloader.GetComponent<AudioLoader>().GetSpecificSongFromFolder(OpenStage.carryover + Path.DirectorySeparatorChar, filename + ".mp3");
             return;
         } else if (File.Exists(OpenStage.carryover + Path.DirectorySeparatorChar + filename + ".wav"))
         {
-            audioloader.GetComponent<AudioLoader>().GetSpecificSongFromFolder(OpenStage.carryover + Path.DirectorySeparatorChar + Path.DirectorySeparatorChar, filename + ".wav");
+            audioloader.GetComponent<AudioLoader>().GetSpecificSongFromFolder(OpenStage.carryover + Path.DirectorySeparatorChar, filename + ".wav");
             return;
         } else if (File.Exists(OpenStage.carryover + Path.DirectorySeparatorChar + filename + ".ogg"))
         {
-            audioloader.GetComponent<AudioLoader>().GetSpecificSongFromFolder(OpenStage.carryover + Path.DirectorySeparatorChar + Path.DirectorySeparatorChar, filename + ".ogg");
+            audioloader.GetComponent<AudioLoader>().GetSpecificSongFromFolder(OpenStage.carryover + Path.DirectorySeparatorChar, filename + ".ogg");
             return;
         }
         {

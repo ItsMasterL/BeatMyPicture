@@ -132,7 +132,6 @@ public class RecordAudio : MonoBehaviour
             endscreen.SetActive(true);
             hidewhendone.SetActive(false);
             lagpage.SetActive(true);
-            LoadInfoFromTemplates.RemoveBackground(lagpage);
             gameObject.SetActive(false);
         }
     }

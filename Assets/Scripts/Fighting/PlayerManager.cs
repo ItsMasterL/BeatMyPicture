@@ -150,6 +150,7 @@ public class PlayerManager : MonoBehaviour
     //loading
     int spritesLoaded;
     public GameObject scaleMatch;
+    public GameObject projectile;
     // Start is called before the first frame update
     void Start()
     {
@@ -386,6 +387,35 @@ public class PlayerManager : MonoBehaviour
                             else
                                 hitbox.transform.localPosition = new Vector2(-frames.dmgxoffset, frames.dmgyoffset);
                             hitbox.transform.localScale = new Vector3(frames.dmgradius, frames.dmgradius);
+                        }
+                        if (frames.projectilelife != 0)
+                        {
+                            currentDamage = Mathf.Abs(frames.damage);
+                            if (facingRight)
+                            {
+                                GameObject obj = GameObject.Instantiate(projectile, transform);
+                                obj.transform.localPosition = new Vector2(frames.dmgxoffset, frames.dmgyoffset);
+                                obj.transform.localScale = new Vector3(frames.dmgradius, frames.dmgradius);
+                                obj.GetComponent<Projectile>().lifetime = frames.projectilelife;
+                                obj.GetComponent<Projectile>().damage = currentDamage;
+                                obj.GetComponent<Projectile>().deltax = frames.projectilevectorx;
+                                obj.GetComponent<Projectile>().deltay = frames.projectilevectory;
+                                obj.GetComponent<SpriteRenderer>().sprite = sprite[int.Parse(frames.projectileimage)];
+                                obj.transform.parent = null;
+                            }
+                            else
+                            {
+                                GameObject obj = GameObject.Instantiate(projectile, transform);
+                                obj.transform.localPosition = new Vector2(frames.dmgxoffset, frames.dmgyoffset);
+                                obj.transform.localScale = new Vector3(frames.dmgradius, frames.dmgradius);
+                                obj.GetComponent<Projectile>().lifetime = frames.projectilelife;
+                                obj.GetComponent<Projectile>().damage = currentDamage;
+                                obj.GetComponent<Projectile>().deltax = -frames.projectilevectorx;
+                                obj.GetComponent<Projectile>().deltay = frames.projectilevectory;
+                                obj.GetComponent<SpriteRenderer>().sprite = sprite[int.Parse(frames.projectileimage)];
+                                obj.GetComponent<SpriteRenderer>().flipX = true;
+                                obj.transform.parent = null;
+                            }
                         }
                         if (frames.sound != "")
                         {

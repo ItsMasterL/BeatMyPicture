@@ -187,8 +187,11 @@ public class PlayerManager : MonoBehaviour
             joystick.SetActive(false);
             osc.SetActive(false);
         }
-        
+
         //TODO: Match player scale to scale object
+        //GameObject scale = GameObject.Find("Scale");
+
+
 
         CheckSets(false);
     }
@@ -721,6 +724,7 @@ public class PlayerManager : MonoBehaviour
             }
         }
     }
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {

@@ -106,6 +106,8 @@ public class PlayerManager : MonoBehaviour
     #endregion
     //info
     public bool P1;
+    public int CPUType = 0; //CPU 0 - No AI || CPU 1 - Endless; Choose a random attacking move, then move forward and use move when nearby player ||
+                            //CPU 2 - Vs; categorize moves by damage, cooldown, and range, and use accordingly || CPU -1 - Another player (multiplayer)
     public bool debugMode;
     public float health = 200f;
     public bool onGround;
@@ -201,8 +203,20 @@ public class PlayerManager : MonoBehaviour
         input = new Controls();
     }
     #region inputs
+
+    class CpuDetails
+    {
+        public int num;
+        public float damage;
+        public float lag;
+        public float xrange;
+        public float yrange;
+        public float move;
+        public float jump;
+    }
     private void OnEnable()
     {
+        List<CpuDetails> details = new List<CpuDetails>();
         if (P1)
         {
             UP = input.Default.Up;
@@ -238,6 +252,25 @@ public class PlayerManager : MonoBehaviour
             JUMP.Enable();
             JUMP.performed += JUMP_performed;
             JUMP.canceled += JUMP_performed;
+        }
+        else if (CPUType >= 0)
+        {
+            foreach(JSONManager.AnimSet set in Set)
+            {
+                CpuDetails setdetails = new CpuDetails();
+                foreach(string Frame in set.frameIDs)
+                {
+                    setdetails.damage += frame[int.Parse(Frame)].damage;
+                    if (frame[int.Parse(Frame)].cancancel == false)
+                        setdetails.lag += frame[int.Parse(Frame)].seconds;
+                    setdetails.xrange += frame[int.Parse(Frame)].dmgxoffset * frame[int.Parse(Frame)].dmgradius; //theoretically gets the best damage/radius ratio for x axis
+                    setdetails.yrange += frame[int.Parse(Frame)].dmgyoffset * frame[int.Parse(Frame)].dmgradius; //theoretically gets the best damage/radius ratio for y axis
+                    setdetails.move += frame[int.Parse(Frame)].movex;
+                    setdetails.jump += frame[int.Parse(Frame)].movey;
+                }
+                setdetails.num = set.SetID;
+                details.Add(setdetails);
+            }
         }
     }
 
@@ -717,6 +750,7 @@ public class PlayerManager : MonoBehaviour
         {
             iframes = iframe;
             health -= dmg;
+            if (health < 0) health = 0;
             hurt = true;
             if (debugMode)
             {

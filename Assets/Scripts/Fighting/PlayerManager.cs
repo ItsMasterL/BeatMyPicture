@@ -108,6 +108,7 @@ public class PlayerManager : MonoBehaviour
     public bool P1;
     public int CPUType = 0; //CPU 0 - No AI || CPU 1 - Endless; Choose a random attacking move, then move forward and use move when nearby player ||
                             //CPU 2 - Vs; categorize moves by damage, cooldown, and range, and use accordingly || CPU -1 - Another player (multiplayer)
+    public int CPULevel = 5;
     public bool debugMode;
     public float health = 200f;
     public bool onGround;
@@ -122,6 +123,7 @@ public class PlayerManager : MonoBehaviour
     public float frametimer;
     public float jumptimer;
     public float landtimer;
+    public float cputimer;
 
     //json
     [SerializeField]
@@ -148,14 +150,19 @@ public class PlayerManager : MonoBehaviour
 
     //debug
     public GameObject hitbox;
+    [SerializeField]
+    List<CpuDetails> details;
+    GameObject player1;
 
     //loading
     int spritesLoaded;
     public GameObject scaleMatch;
     public GameObject projectile;
+
     // Start is called before the first frame update
     void Start()
     {
+        player1 = GameObject.Find("P1");
         sr = GetComponent<SpriteRenderer>();
         audioSource = GetComponent<AudioSource>();
         LoadJson();
@@ -196,15 +203,31 @@ public class PlayerManager : MonoBehaviour
 
 
         CheckSets(false);
+
+        if (!P1 && CPUType >= 0)
+        {
+            foreach (JSONManager.AnimSet set in Set)
+            {
+                CpuDetails setdetails = new CpuDetails();
+                foreach (string Frame in set.frameIDs)
+                {
+                    setdetails.damage += frame[int.Parse(Frame)].damage;
+                    if (frame[int.Parse(Frame)].cancancel == false)
+                        setdetails.lag += frame[int.Parse(Frame)].seconds;
+                    setdetails.xrange += frame[int.Parse(Frame)].dmgxoffset * frame[int.Parse(Frame)].dmgradius; //theoretically gets the best damage/radius ratio for x axis
+                    setdetails.yrange += frame[int.Parse(Frame)].dmgyoffset * frame[int.Parse(Frame)].dmgradius; //theoretically gets the best damage/radius ratio for y axis
+                    setdetails.move += frame[int.Parse(Frame)].movex;
+                    setdetails.jump += frame[int.Parse(Frame)].movey;
+                    if (frame[int.Parse(Frame)].projectilelife > 0) setdetails.projectile = true;
+                    setdetails.num = set.SetID;
+                    details.Add(setdetails);
+                }
+            }
+            Debug.Log("set details: " + details.Count);
+        }
     }
 
-    private void Awake()
-    {
-        input = new Controls();
-    }
-    #region inputs
-
-    class CpuDetails
+    public class CpuDetails
     {
         public int num;
         public float damage;
@@ -213,10 +236,18 @@ public class PlayerManager : MonoBehaviour
         public float yrange;
         public float move;
         public float jump;
+        public bool projectile;
     }
+
+    private void Awake()
+    {
+        input = new Controls();
+    }
+    #region inputs
+
     private void OnEnable()
     {
-        List<CpuDetails> details = new List<CpuDetails>();
+        details = new List<CpuDetails>();
         if (P1)
         {
             UP = input.Default.Up;
@@ -252,25 +283,6 @@ public class PlayerManager : MonoBehaviour
             JUMP.Enable();
             JUMP.performed += JUMP_performed;
             JUMP.canceled += JUMP_performed;
-        }
-        else if (CPUType >= 0)
-        {
-            foreach(JSONManager.AnimSet set in Set)
-            {
-                CpuDetails setdetails = new CpuDetails();
-                foreach(string Frame in set.frameIDs)
-                {
-                    setdetails.damage += frame[int.Parse(Frame)].damage;
-                    if (frame[int.Parse(Frame)].cancancel == false)
-                        setdetails.lag += frame[int.Parse(Frame)].seconds;
-                    setdetails.xrange += frame[int.Parse(Frame)].dmgxoffset * frame[int.Parse(Frame)].dmgradius; //theoretically gets the best damage/radius ratio for x axis
-                    setdetails.yrange += frame[int.Parse(Frame)].dmgyoffset * frame[int.Parse(Frame)].dmgradius; //theoretically gets the best damage/radius ratio for y axis
-                    setdetails.move += frame[int.Parse(Frame)].movex;
-                    setdetails.jump += frame[int.Parse(Frame)].movey;
-                }
-                setdetails.num = set.SetID;
-                details.Add(setdetails);
-            }
         }
     }
 
@@ -516,6 +528,67 @@ public class PlayerManager : MonoBehaviour
             iframes = 0;
             hurt = false;
             sr.color = new Color(1, 1, 1, 1);
+        }
+
+        if (cputimer <= 0 && CPUType == 2)
+        {
+            cputimer = Random.Range(0, (5 - (CPULevel - 1) / 2));
+            int bestrange = 0;
+            float maxrange = 0;
+
+            int bestheight = 0;
+            float maxheight = 0;
+
+            int bestdamage = 0;
+            float maxdamage = 0;
+
+            int bestmove = 0;
+            float maxmove = 0;
+
+            int bestjump = 0;
+            float maxjump = 0;
+
+            int bestlag = 0;
+            float leastlag = 0;
+             
+            foreach (CpuDetails det in details)
+            {
+                if (det.xrange > maxrange)
+                {
+                    maxrange = det.xrange;
+                    bestrange = det.num;
+                }
+                if (det.yrange > maxheight)
+                {
+                    maxheight = det.yrange;
+                    bestheight = det.num;
+                }
+                if (det.damage > maxdamage)
+                {
+                    maxdamage = det.damage;
+                    bestdamage = det.num;
+                }
+                if (det.move > maxmove)
+                {
+                    maxmove = det.move;
+                    bestmove = det.num;
+                }
+                if (det.jump > maxjump)
+                {
+                    maxjump = det.jump;
+                    bestjump = det.num;
+                }
+                if (-det.lag < leastlag)
+                {
+                    leastlag = -det.lag;
+                    bestlag = det.num;
+                }
+            }
+            leastlag = Mathf.Abs(leastlag);
+            if (Vector2.Distance(player1.transform.position, gameObject.transform.position) < bestrange)
+            {
+                //use sortedSets, sort by range
+            }
         }
     }
 

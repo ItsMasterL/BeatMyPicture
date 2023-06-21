@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.IO;
+using System.Linq;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -247,7 +248,6 @@ public class PlayerManager : MonoBehaviour
 
     private void OnEnable()
     {
-        details = new List<CpuDetails>();
         if (P1)
         {
             UP = input.Default.Up;
@@ -588,6 +588,20 @@ public class PlayerManager : MonoBehaviour
             if (Vector2.Distance(player1.transform.position, gameObject.transform.position) < bestrange)
             {
                 //use sortedSets, sort by range
+
+                ////sortedSets = new List<JSONManager.AnimSet>();
+                ////List<JSONManager.Frame> tempframe = new List<JSONManager.Frame>();
+                ////foreach (JSONManager.AnimSet ababa in Set)
+                ////{
+                ////    sortedSets.Add(ababa);
+                ////    foreach (string i in ababa.frameIDs)
+                ////    {
+                ////        tempframe.Add(frame[int.Parse(i)]);
+                ////    }
+                ////}
+                ////var templist = sortedSets.SelectMany(w => frame, (parent, child) => new { parent.frameIDs, child.dmgxoffset, child.damage }).OrderByDescending(d => d.dmgxoffset).ThenByDescending(d => d.damage).ToList();
+                
+                //this will not work the way i want but its better than nothing
             }
         }
     }

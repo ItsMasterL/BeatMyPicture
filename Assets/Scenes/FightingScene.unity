@@ -1263,7 +1263,7 @@ MonoBehaviour:
   - {fileID: 1872820494}
   osc: {fileID: 1642984175}
   P1: 0
-  CPUType: 0
+  CPUType: 1
   CPULevel: 5
   debugMode: 0
   health: 200

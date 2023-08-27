@@ -84,6 +84,10 @@ public class JSONManager : MonoBehaviour
     public GameObject prtime;
     public GameObject primageid;
     public GameObject nextframe;
+    public GameObject rotation;
+    public GameObject xscale;
+    public GameObject yscale;
+    public GameObject instant;
     #endregion
 
     #region All the game objects to read data from for sets
@@ -143,6 +147,10 @@ public class JSONManager : MonoBehaviour
         public bool hasgravity = true; //If false, gravity is tempoararily disabled during this frame, useful for precise control of character
         public string sound = null; //mp3 or wav. Hard length limit of probably 5 seconds, but unlimited layering unless theres an issue
         public string nextset = null; //Intended use for frame at end of set, to loop animations or easily use shared animations (Can softlock if cancancel is false on all frames!!)
+        public float rotation = 0f; //Rotation of the frame, always starting from 0 rotation
+        public float xscale = 1; //Scale on the x-axis, good for mirroring
+        public float yscale = 1; //Scale on the y-axis, good for squash and stretch on advanced templates
+        public bool instanttransform = true; //Controls whether the scaling/rotation of the fighter is lerped for the duration of the frame or applied as soon as the frame is active
     }
 
     [System.Serializable]
@@ -329,6 +337,10 @@ public class JSONManager : MonoBehaviour
                 primageid.GetComponent<TMP_InputField>().text = frame.projectileimage;
                 soundid.GetComponent<TMP_InputField>().text = frame.sound;
                 nextframe.GetComponent<TMP_InputField>().text = frame.nextset;
+                rotation.GetComponent<TMP_InputField>().text = frame.rotation.ToString();
+                xscale.GetComponent<TMP_InputField>().text = frame.xscale.ToString();
+                yscale.GetComponent<TMP_InputField>().text = frame.yscale.ToString();
+                instant.GetComponent<Toggle>().isOn = frame.instanttransform;
             }
         }
         else
@@ -394,6 +406,10 @@ public class JSONManager : MonoBehaviour
         frame.projectileimage = null;
         frame.sound = null;
         frame.nextset = null;
+        frame.rotation = 0;
+        frame.xscale = 1;
+        frame.yscale = 1;
+        frame.instanttransform = true;
 
         //All must be null checked except for ID, booleans, projectile image id, sound id, and next set, because they have default values
         frame.FrameID = int.Parse(ID);
@@ -451,6 +467,19 @@ public class JSONManager : MonoBehaviour
         frame.sound = soundid.GetComponent<TMP_InputField>().text;
         frame.nextset = nextframe.GetComponent<TMP_InputField>().text;
 
+        if (rotation.GetComponent<TMP_InputField>().text != "")
+        {
+            frame.rotation = float.Parse(rotation.GetComponent<TMP_InputField>().text);
+        }
+        if (xscale.GetComponent<TMP_InputField>().text != "")
+        {
+            frame.xscale = float.Parse(xscale.GetComponent<TMP_InputField>().text);
+        }
+        if (yscale.GetComponent<TMP_InputField>().text != "")
+        {
+            frame.yscale = float.Parse(yscale.GetComponent<TMP_InputField>().text);
+        }
+        frame.instanttransform = instant.GetComponent<Toggle>().isOn;
 
 
         string Output = JsonUtility.ToJson(frame);
@@ -506,6 +535,10 @@ public class JSONManager : MonoBehaviour
         frame.projectileimage = null;
         frame.sound = null;
         frame.nextset = null;
+        frame.rotation = 0;
+        frame.xscale = 1;
+        frame.yscale = 1;
+        frame.instanttransform = true;
 
         frameimageid.GetComponent<TMP_InputField>().text = null;
         frametime.GetComponent<TMP_InputField>().text = null;
@@ -523,6 +556,10 @@ public class JSONManager : MonoBehaviour
         primageid.GetComponent<TMP_InputField>().text = null;
         soundid.GetComponent<TMP_InputField>().text = null;
         nextframe.GetComponent<TMP_InputField>().text = null;
+        rotation.GetComponent<TMP_InputField>().text = null;
+        xscale.GetComponent<TMP_InputField>().text = null;
+        yscale.GetComponent<TMP_InputField>().text = null;
+        instant.GetComponent<Toggle>().isOn = true;
 
         frameMenu.SetActive(false);
         loadFrameButton();

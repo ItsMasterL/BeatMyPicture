@@ -154,11 +154,22 @@ public class PlayerManager : MonoBehaviour
     [SerializeField]
     List<CpuDetails> details;
     GameObject player1;
+    [SerializeField]
+    GameObject endscreen;
+    float initialx = 1;
+    float modx = 0;
+    float lerpx = 0;
+    float initialy = 0;
+    float mody = 0;
+    float lerpy = 0;
+    float lerpr = 0;
+
 
     //loading
     int spritesLoaded;
     public GameObject scaleMatch;
     public GameObject projectile;
+    Renderer scale;
 
     // Start is called before the first frame update
     void Start()
@@ -166,6 +177,7 @@ public class PlayerManager : MonoBehaviour
         player1 = GameObject.Find("P1");
         sr = GetComponent<SpriteRenderer>();
         audioSource = GetComponent<AudioSource>();
+        scale = GameObject.Find("Scale").GetComponent<Renderer>();
         LoadJson();
         LoadImages();
         LoadSound();
@@ -198,15 +210,12 @@ public class PlayerManager : MonoBehaviour
             osc.SetActive(false);
         }
 
-        //TODO: Match player scale to scale object
-        //GameObject scale = GameObject.Find("Scale");
-
-
 
         CheckSets(false);
 
         if (!P1 && CPUType >= 0)
         {
+            details = new List<CpuDetails>();
             foreach (JSONManager.AnimSet set in Set)
             {
                 CpuDetails setdetails = new CpuDetails();
@@ -349,12 +358,54 @@ public class PlayerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (health <= 0)
+        {
+            endscreen.SetActive(true);
+            foreach (PlayerManager pm in FindObjectsOfType<PlayerManager>())
+            {
+                pm.enabled = false;
+            }
+        }
+
+        if (gameObject.transform.position.x < -8) transform.position = new Vector3(-7, transform.position.y, transform.position.z);
+        if (gameObject.transform.position.x > 8) transform.position = new Vector3(7, transform.position.y, transform.position.z);
+        if (gameObject.transform.position.y < -8) transform.position = new Vector3(transform.position.x, -1, transform.position.z);
+
+        if (player1.gameObject != gameObject && gameObject.transform.position.x < player1.gameObject.transform.position.x)
+        {
+            facingRight = true;
+            player1.GetComponent<PlayerManager>().facingRight = false;
+        }
+        if (player1.gameObject != gameObject && gameObject.transform.position.x > player1.gameObject.transform.position.x)
+        {
+            facingRight = false;
+            player1.GetComponent<PlayerManager>().facingRight = true;
+        }
+
+        if (currentSprite > sprite.Length)
+        {
+            currentSprite -= sprite.Length;
+        }
+
         if (spritesLoaded < sprite.Length)
         {
             sr.sprite = sprite[spritesLoaded];
             spritesLoaded++;
+
+            //the scale fix
+            Renderer renderer = GetComponent<Renderer>();
+            float resizeX = scale.bounds.size.x / renderer.bounds.size.x;
+            float resizeY = scale.bounds.size.y / renderer.bounds.size.y;
+            float resizeZ = scale.bounds.size.z / renderer.bounds.size.z;
+
+            resizeX *= transform.localScale.x;
+            resizeY *= transform.localScale.y;
+            resizeZ *= transform.localScale.z;
+
+            transform.localScale = new Vector3(resizeX, resizeY, resizeZ);
             return;
         }
+
 
         #region debug
         if (debugMode)
@@ -385,14 +436,57 @@ public class PlayerManager : MonoBehaviour
         #endregion
 
         if (sr.sprite != sprite[currentSprite])
+        {
             sr.sprite = sprite[currentSprite];
 
-        if (facingRight)
+            //the scale fix
+            Renderer renderer = GetComponent<Renderer>();
+            float resizeX = scale.bounds.size.x / renderer.bounds.size.x;
+            float resizeY = scale.bounds.size.y / renderer.bounds.size.y;
+            float resizeZ = scale.bounds.size.z / renderer.bounds.size.z;
+
+            resizeX *= transform.localScale.x;
+            resizeY *= transform.localScale.y;
+            resizeZ *= transform.localScale.z;
+
+            if (!facingRight) resizeX = -Mathf.Abs(resizeX);
+            if (facingRight) resizeX = Mathf.Abs(resizeX);
+
+            initialx = resizeX;
+            initialy = resizeY;
+
+            transform.localScale = new Vector3(resizeX, resizeY, resizeZ);
+        }
+
+        modx = initialx * frame[currentFrame].xscale;
+        mody = initialy * frame[currentFrame].yscale;
+
+        GetComponent<Rigidbody2D>().gravityScale = 1;
+        if (frame[currentFrame].hasgravity == false) GetComponent<Rigidbody2D>().gravityScale = 0;
+
+        if (frame[currentFrame].instanttransform)
         {
-            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(modx, mody, transform.localScale.z);
+            if (!facingRight) transform.localRotation = Quaternion.Euler(0, 0, frame[currentFrame].rotation);
+            if (facingRight) transform.localRotation = Quaternion.Euler(0, 0, -frame[currentFrame].rotation);
         } else
         {
-            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            Debug.Log(lerpr + ", " + lerpx + ", " + lerpy);
+            transform.localScale = new Vector3(Mathf.Lerp(initialx, modx, lerpx), Mathf.Lerp(initialy, mody, lerpy), transform.localScale.z);
+            if (!facingRight) transform.localRotation = Quaternion.Euler(0, 0, Mathf.Lerp(0, frame[currentFrame].rotation, lerpr));
+            if (facingRight) transform.localRotation = Quaternion.Euler(0, 0, Mathf.Lerp(0, -frame[currentFrame].rotation, lerpr));
+        }
+        if (lerpx < frame[currentFrame].seconds)
+        {
+            lerpx += Time.deltaTime / frame[currentFrame].seconds;
+        }
+        if (lerpy < frame[currentFrame].seconds)
+        {
+            lerpy += Time.deltaTime / frame[currentFrame].seconds;
+        }
+        if (lerpr < frame[currentFrame].seconds)
+        {
+            lerpr += Time.deltaTime / frame[currentFrame].seconds;
         }
 
         if (active != null && frametimer == 0)
@@ -419,6 +513,9 @@ public class PlayerManager : MonoBehaviour
                 {
                     if (frames.FrameID.ToString("000") == active.frameIDs[currentFrame])
                     {
+                        lerpr = 0;
+                        lerpx = 0;
+                        lerpy = 0;
                         currentSprite = int.Parse(frames.image);
                         frametimer = frames.seconds;
                         matched = true;
@@ -426,15 +523,18 @@ public class PlayerManager : MonoBehaviour
                         {
                             currentDamage = Mathf.Abs(frames.damage);
                             hitbox.gameObject.SetActive(true);
+                            hitbox.transform.parent = null;
                             if (debugMode)
                                 hitbox.GetComponent<SpriteRenderer>().enabled = true;
                             else
                                 hitbox.GetComponent<SpriteRenderer>().enabled = false;
                             if (facingRight)
-                                hitbox.transform.localPosition = new Vector2(frames.dmgxoffset, frames.dmgyoffset);
+                                hitbox.transform.localPosition = new Vector2(transform.position.x + frames.dmgxoffset, transform.position.y + frames.dmgyoffset);
                             else
-                                hitbox.transform.localPosition = new Vector2(-frames.dmgxoffset, frames.dmgyoffset);
+                                hitbox.transform.localPosition = new Vector2(transform.position.x - frames.dmgxoffset, transform.position.y + frames.dmgyoffset);
+
                             hitbox.transform.localScale = new Vector3(frames.dmgradius, frames.dmgradius);
+                            hitbox.transform.parent = gameObject.transform;
                         }
                         if (frames.projectilelife != 0)
                         {
@@ -442,19 +542,20 @@ public class PlayerManager : MonoBehaviour
                             if (facingRight)
                             {
                                 GameObject obj = GameObject.Instantiate(projectile, transform);
-                                obj.transform.localPosition = new Vector2(frames.dmgxoffset, frames.dmgyoffset);
+                                obj.transform.parent = null;
+                                obj.transform.localPosition = new Vector2(transform.position.x + frames.dmgxoffset, transform.position.y + frames.dmgyoffset);
                                 obj.transform.localScale = new Vector3(frames.dmgradius, frames.dmgradius);
                                 obj.GetComponent<Projectile>().lifetime = frames.projectilelife;
                                 obj.GetComponent<Projectile>().damage = currentDamage;
                                 obj.GetComponent<Projectile>().deltax = frames.projectilevectorx;
                                 obj.GetComponent<Projectile>().deltay = frames.projectilevectory;
                                 obj.GetComponent<SpriteRenderer>().sprite = sprite[int.Parse(frames.projectileimage)];
-                                obj.transform.parent = null;
                             }
                             else
                             {
                                 GameObject obj = GameObject.Instantiate(projectile, transform);
-                                obj.transform.localPosition = new Vector2(frames.dmgxoffset, frames.dmgyoffset);
+                                obj.transform.parent = null;
+                                obj.transform.localPosition = new Vector2(transform.position.x - frames.dmgxoffset, transform.position.y + frames.dmgyoffset);
                                 obj.transform.localScale = new Vector3(frames.dmgradius, frames.dmgradius);
                                 obj.GetComponent<Projectile>().lifetime = frames.projectilelife;
                                 obj.GetComponent<Projectile>().damage = currentDamage;
@@ -462,7 +563,6 @@ public class PlayerManager : MonoBehaviour
                                 obj.GetComponent<Projectile>().deltay = frames.projectilevectory;
                                 obj.GetComponent<SpriteRenderer>().sprite = sprite[int.Parse(frames.projectileimage)];
                                 obj.GetComponent<SpriteRenderer>().flipX = true;
-                                obj.transform.parent = null;
                             }
                         }
                         if (frames.sound != "")
@@ -530,11 +630,18 @@ public class PlayerManager : MonoBehaviour
             sr.color = new Color(1, 1, 1, 1);
         }
 
+        if (cputimer > 0 && CPUType == 2)
+        {
+            cputimer -= Time.deltaTime;
+        }
+
         if (cputimer <= 0 && CPUType == 2)
         {
-            cputimer = Random.Range(0, (5 - (CPULevel - 1) / 2));
             int bestrange = 0;
             float maxrange = 0;
+
+            int worstrange = 0;
+            float minrange = Mathf.Infinity;
 
             int bestheight = 0;
             float maxheight = 0;
@@ -544,6 +651,9 @@ public class PlayerManager : MonoBehaviour
 
             int bestmove = 0;
             float maxmove = 0;
+
+            int bestbackmove = 0;
+            float maxbackmove = 0;
 
             int bestjump = 0;
             float maxjump = 0;
@@ -557,6 +667,11 @@ public class PlayerManager : MonoBehaviour
                 {
                     maxrange = det.xrange;
                     bestrange = det.num;
+                }
+                if (det.xrange < minrange && det.xrange != 0)
+                {
+                    minrange = det.xrange;
+                    worstrange = det.num;
                 }
                 if (det.yrange > maxheight)
                 {
@@ -573,6 +688,11 @@ public class PlayerManager : MonoBehaviour
                     maxmove = det.move;
                     bestmove = det.num;
                 }
+                if (det.move < maxbackmove)
+                {
+                    maxbackmove = det.move;
+                    bestbackmove = det.num;
+                }
                 if (det.jump > maxjump)
                 {
                     maxjump = det.jump;
@@ -585,24 +705,68 @@ public class PlayerManager : MonoBehaviour
                 }
             }
             leastlag = Mathf.Abs(leastlag);
-            if (Vector2.Distance(player1.transform.position, gameObject.transform.position) < bestrange)
+            Debug.Log("range: " + bestrange + ";" + worstrange + ", height: " + bestheight + ", damage: " + bestdamage + ", move: " + bestmove + ";" + bestbackmove + ", jump: " + bestjump + ", lag: " + bestlag);
+            //for now use best move per situation, in future mix up moves by sorting by different attributes and picking randomly from the top 3-5
+            bool chosen = false;
+            int best = 0;
+            if (!chosen && Vector2.Distance(player1.transform.position, gameObject.transform.position) > bestrange) //prioritize getting in
             {
-                //use sortedSets, sort by range
+                int decider = Random.Range(0, 2);
 
-                ////sortedSets = new List<JSONManager.AnimSet>();
-                ////List<JSONManager.Frame> tempframe = new List<JSONManager.Frame>();
-                ////foreach (JSONManager.AnimSet ababa in Set)
-                ////{
-                ////    sortedSets.Add(ababa);
-                ////    foreach (string i in ababa.frameIDs)
-                ////    {
-                ////        tempframe.Add(frame[int.Parse(i)]);
-                ////    }
-                ////}
-                ////var templist = sortedSets.SelectMany(w => frame, (parent, child) => new { parent.frameIDs, child.dmgxoffset, child.damage }).OrderByDescending(d => d.dmgxoffset).ThenByDescending(d => d.damage).ToList();
-                
-                //this will not work the way i want but its better than nothing
+                best = bestmove;
+                if (decider == 0) best = bestjump;
+
+                up = Set[best].up;
+                down = Set[best].down;
+                forward = Set[best].forward;
+                backward = Set[best].backward;
+                jump = Set[best].jump;
+                atk = Set[best].attack;
+                special = Set[best].special;
+                taunt = Set[best].taunt;
+                superspecial = Set[best].superspecial;
+                chosen = true;
             }
+            if (!chosen && Vector2.Distance(player1.transform.position, gameObject.transform.position) < bestrange && Vector2.Distance(player1.transform.position, gameObject.transform.position) > worstrange) //pick between best mobility and best range
+            {
+                int decider = Random.Range(0, 3);
+
+                best = bestmove;
+                if (decider == 0) best = bestrange;
+
+                up = Set[best].up;
+                down = Set[best].down;
+                forward = Set[best].forward;
+                backward = Set[best].backward;
+                jump = Set[best].jump;
+                atk = Set[best].attack;
+                special = Set[best].special;
+                taunt = Set[best].taunt;
+                superspecial = Set[best].superspecial;
+                chosen = true;
+            }
+            if (!chosen && Vector2.Distance(player1.transform.position, gameObject.transform.position) < bestrange && Vector2.Distance(player1.transform.position, gameObject.transform.position) < worstrange) //prioritize attack but sometimes retreat
+            {
+                int decider = Random.Range(0, 6);
+
+                best = bestmove;
+                if (decider <= 1) best = bestrange;
+                if (decider >= 2 && decider <= 4) best = bestdamage;
+                if (decider == 5) best = bestbackmove;
+
+                up = Set[best].up;
+                down = Set[best].down;
+                forward = Set[best].forward;
+                backward = Set[best].backward;
+                jump = Set[best].jump;
+                atk = Set[best].attack;
+                special = Set[best].special;
+                taunt = Set[best].taunt;
+                superspecial = Set[best].superspecial;
+                chosen = true;
+            }
+
+            cputimer = Random.Range(0, (5 - Mathf.Sqrt(CPULevel * 2.5f)));
         }
     }
 

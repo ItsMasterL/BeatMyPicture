@@ -471,7 +471,6 @@ public class PlayerManager : MonoBehaviour
             if (facingRight) transform.localRotation = Quaternion.Euler(0, 0, -frame[currentFrame].rotation);
         } else
         {
-            Debug.Log(lerpr + ", " + lerpx + ", " + lerpy);
             transform.localScale = new Vector3(Mathf.Lerp(initialx, modx, lerpx), Mathf.Lerp(initialy, mody, lerpy), transform.localScale.z);
             if (!facingRight) transform.localRotation = Quaternion.Euler(0, 0, Mathf.Lerp(0, frame[currentFrame].rotation, lerpr));
             if (facingRight) transform.localRotation = Quaternion.Euler(0, 0, Mathf.Lerp(0, -frame[currentFrame].rotation, lerpr));
@@ -930,70 +929,93 @@ public class PlayerManager : MonoBehaviour
         Debug.Log(inputcount);
 
         bool exactMatch = false;
-        if (inputcount == 0b0000_0000 && onGround)
-        {
+        //Hurt code caused issue
+        //if (!hurt)
+        //{
             foreach (JSONManager.AnimSet set in Set)
             {
-                set.matches = 0b0000_0000;
-                if (set.idle)
+                if (set.whenGrounded == onGround)
+                {
+                    if (set.up == true) set.matches = set.matches | 0b0000_0001;
+                    if (set.down == true) set.matches = set.matches | 0b0000_0010;
+                    if (set.forward == true) set.matches = set.matches | 0b0000_0100;
+                    if (set.backward == true) set.matches = set.matches | 0b0000_1000;
+                    if (set.attack == true) set.matches = set.matches | 0b0001_0000;
+                    if (set.special == true) set.matches = set.matches | 0b0010_0000;
+                    if (set.taunt == true) set.matches = set.matches | 0b0100_0000;
+                    if (set.jump == true) set.matches = set.matches | 0b1000_0000;
+                    //if (set.superspecial == true && superspecial == true) set.matches++; ADD LATER
+
+                    if (set.matches == inputcount && inputcount != 0) //works
+                    {
+                        Debug.Log("Exact");
+                        sortedSets.Add(set);
+                        exactMatch = true;
+                    }
+                }
+            }
+            if (exactMatch == false && inputcount != 0 && desc.randomOnNoMatch)
+            {
+                foreach (JSONManager.AnimSet set in Set) //TODO: add sorting logic? make it so highest takes priority?
+                {
+                    if ((inputcount & set.matches) != 0 && inputcount != 0 && set.whenGrounded == onGround)
+                    {
+                        Debug.Log("Includes input; " + set.matches);
+                        sortedSets.Add(set);
+                    }
+                }
+                foreach (JSONManager.AnimSet set in sortedSets)
+                {
+                    Debug.Log("Set " + set.SetID);
+                }
+            }
+
+
+            if (inputcount == 0b0000_0000 && onGround)
+            {
+                foreach (JSONManager.AnimSet set in Set)
+                {
+                    set.matches = 0b0000_0000;
+                    if (set.idle)
+                    {
+                        sortedSets.Add(set);
+                    }
+                }
+                active = sortedSets[Random.Range(0, sortedSets.Count)];
+                Debug.Log("Set " + active.SetID + " was chosen! Idle");
+            }
+            if (sortedSets.Count == 0 && desc.randomOnNoMatch)
+            {
+                foreach (JSONManager.AnimSet set in Set)
                 {
                     sortedSets.Add(set);
                 }
+            }
+            if (sortedSets.Count == 0)
+            {
+                sortedSets.Add(Set[0]);
             }
             active = sortedSets[Random.Range(0, sortedSets.Count)];
-            Debug.Log("Set " + active.SetID + " was chosen! Idle");
+            Debug.Log("Set " + active.SetID + " was chosen! Exact match: " + exactMatch + " (" + inputcount + ")");
         }
-        foreach (JSONManager.AnimSet set in Set)
-        {
-            if (set.whenGrounded == onGround)
-            {
-                if (set.up == true) set.matches = set.matches | 0b0000_0001;
-                if (set.down == true) set.matches = set.matches | 0b0000_0010;
-                if (set.forward == true) set.matches = set.matches | 0b0000_0100;
-                if (set.backward == true) set.matches = set.matches | 0b0000_1000;
-                if (set.attack == true) set.matches = set.matches | 0b0001_0000;
-                if (set.special == true) set.matches = set.matches | 0b0010_0000;
-                if (set.taunt == true) set.matches = set.matches | 0b0100_0000;
-                if (set.jump == true) set.matches = set.matches | 0b1000_0000;
-                //if (set.superspecial == true && superspecial == true) set.matches++; ADD LATER
+        //else
+        //{
+        //    foreach (JSONManager.AnimSet set in Set)
+        //    {
+        //        if (set.hurt)
+        //        {
+        //            sortedSets.Add(set);
+        //        }
+        //    }
 
-                if (set.matches == inputcount && inputcount != 0) //works
-                {
-                    Debug.Log("Exact");
-                    sortedSets.Add(set);
-                    exactMatch = true;
-                }
-            }
-        }
-        if (exactMatch == false)
-        {
-            foreach (JSONManager.AnimSet set in Set) //TODO: add sorting logic? make it so highest takes priority?
-            {
-                if ((inputcount & set.matches) != 0 && inputcount != 0)
-                {
-                    Debug.Log("Includes input; " + set.matches);
-                    sortedSets.Add(set);
-                }
-            }
-            foreach (JSONManager.AnimSet set in sortedSets)
-            {
-                Debug.Log("Set " + set.SetID);
-            }
-        }
-        if (sortedSets.Count == 0 && desc.randomOnNoMatch)
-        {
-            foreach (JSONManager.AnimSet set in Set)
-            {
-                sortedSets.Add(set);
-            }
-        }
-        if (sortedSets.Count == 0)
-        {
-            sortedSets.Add(Set[0]);
-        }
-        active = sortedSets[Random.Range(0, sortedSets.Count)];
-        Debug.Log("Set " + active.SetID + " was chosen! Exact match: " + exactMatch);
-    }
+        //    if (sortedSets.Count == 0)
+        //    {
+        //        sortedSets.Add(Set[0]);
+        //    }
+        //    active = sortedSets[Random.Range(0, sortedSets.Count)];
+        //    Debug.Log("Set " + active.SetID + " was chosen! Exact match: " + exactMatch + " (" + inputcount + ")");
+        //}
+    
 
     public void TakeDamage(float iframe, float dmg)
     {

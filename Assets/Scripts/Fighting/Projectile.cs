@@ -33,5 +33,10 @@ public class Projectile : MonoBehaviour
             collision.gameObject.GetComponent<PlayerManager>().TakeDamage(parent.frametimer + 0.25f, damage); //TODO: move delay to template and make version specific
             Destroy(gameObject);
         }
+        if (collision.gameObject.name == gameObject.name)
+        {
+            Destroy(collision.gameObject);
+            Destroy(gameObject);
+        }
     }
 }

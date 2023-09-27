@@ -62,6 +62,11 @@ public class SetupFiles : MonoBehaviour
                 }
             }
         }
+
+        if (!Directory.Exists(path + Path.DirectorySeparatorChar + "Templates" + Path.DirectorySeparatorChar + "MagicWarrior"))
+        {
+            
+        }
     }
 
     public void SetFavColor(int Input)
